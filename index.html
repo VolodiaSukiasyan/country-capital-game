@@ -16,21 +16,30 @@
       justify-content: center;
       height: 100vh;
     }
-    .logo {
+    .quiz {
+      display: none;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
     }
-    .logo img {
-      width: 120px;
-      border-radius: 50%;
+    .country-image {
+      width: 220px;
+      height: auto;
+      border-radius: 10px;
+      margin: 15px 0;
     }
-    h1 {
-      margin: 20px 0 10px;
-      font-size: 28px;
+    .option {
+      background-color: #fff;
+      color: #499C54;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin: 8px;
+      cursor: pointer;
+      font-size: 16px;
     }
-    h2 {
-      margin: 0 0 30px;
-      font-size: 18px;
-      font-weight: normal;
+    .option:hover {
+      background-color: #e1f3e4;
     }
     .play-btn {
       padding: 15px 30px;
@@ -48,16 +57,80 @@
   </style>
 </head>
 <body>
-  <div class="logo">
-    <img src="https://cdn-icons-png.flaticon.com/512/44/44947.png" alt="Globe" width="120" alt="Globe Logo" />
+  <div class="logo" id="startScreen">
     <h1>COUNTRY – CAPITAL</h1>
     <h2>ONLINE</h2>
     <button class="play-btn" onclick="startGame()">PLAY</button>
   </div>
 
+  <div class="quiz" id="quizScreen">
+    <h2 id="countryName"></h2>
+    <img id="countryImage" class="country-image" src="" alt="Country" />
+    <div>
+      <button class="option" onclick="chooseAnswer(0)"></button>
+      <button class="option" onclick="chooseAnswer(1)"></button>
+      <button class="option" onclick="chooseAnswer(2)"></button>
+      <button class="option" onclick="chooseAnswer(3)"></button>
+    </div>
+    <p id="feedback"></p>
+  </div>
+
   <script>
+    const questions = [
+      {
+        country: "France",
+        image: "https://upload.wikimedia.org/wikipedia/commons/a/af/Tour_Eiffel_Wikimedia_Commons.jpg",
+        options: ["Madrid", "Rome", "Paris", "Berlin"],
+        answer: 2,
+      },
+      {
+        country: "Japan",
+        image: "https://upload.wikimedia.org/wikipedia/commons/2/21/Tokyo_Montage_2015.jpg",
+        options: ["Seoul", "Tokyo", "Beijing", "Bangkok"],
+        answer: 1,
+      },
+      {
+        country: "Brazil",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Cristo_Redentor_-_Rio_de_Janeiro%2C_Brasil.jpg",
+        options: ["Brasília", "Rio de Janeiro", "Lima", "Buenos Aires"],
+        answer: 0,
+      }
+    ];
+
+    let currentQuestion = 0;
+
     function startGame() {
-      alert("Game starts here (placeholder)");
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("quizScreen").style.display = "flex";
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      document.getElementById("countryName").innerText = q.country;
+      document.getElementById("countryImage").src = q.image;
+      const buttons = document.querySelectorAll(".option");
+      buttons.forEach((btn, index) => {
+        btn.innerText = q.options[index];
+      });
+      document.getElementById("feedback").innerText = "";
+    }
+
+    function chooseAnswer(index) {
+      const q = questions[currentQuestion];
+      if (index === q.answer) {
+        document.getElementById("feedback").innerText = "✅ Correct!";
+      } else {
+        document.getElementById("feedback").innerText = "❌ Wrong!";
+      }
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+          loadQuestion();
+        } else {
+          document.getElementById("quizScreen").innerHTML = '<h2>Game Over!</h2><p>Thanks for playing.</p>';
+        }
+      }, 1500);
     }
   </script>
 </body>
