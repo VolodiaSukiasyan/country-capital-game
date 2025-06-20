@@ -1,9 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <img src="https://cdn-icons-png.flaticon.com/512/44/44947.png" width="100" alt="Globe Logo" />
   <title>Country–Capital Online</title>
   <style>
     body {
@@ -15,7 +15,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
     }
     .quiz {
       display: none;
@@ -24,7 +24,7 @@
       text-align: center;
     }
     .country-image {
-      width: 220px;
+      width: 240px;
       height: auto;
       border-radius: 10px;
       margin: 15px 0;
@@ -55,16 +55,31 @@
     .play-btn:hover {
       background-color: #e1f3e4;
     }
+    .score-timer {
+      margin-bottom: 10px;
+    }
+    .score-timer span {
+      margin: 0 10px;
+    }
+    img.logo {
+      width: 100px;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
-  <div class="logo" id="startScreen">
+  <div id="startScreen">
+    <img class="logo" src="https://cdn-icons-png.flaticon.com/512/44/44947.png" alt="Globe Logo" />
     <h1>COUNTRY – CAPITAL</h1>
     <h2>ONLINE</h2>
     <button class="play-btn" onclick="startGame()">PLAY</button>
   </div>
 
   <div class="quiz" id="quizScreen">
+    <div class="score-timer">
+      <span id="score">Score: 0</span>
+      <span id="timer">Time: 10</span>
+    </div>
     <h2 id="countryName"></h2>
     <img id="countryImage" class="country-image" src="" alt="Country" />
     <div>
@@ -78,31 +93,579 @@
 
   <script>
     const questions = [
-      {
-        country: "France",
-        image: <img src="https://images.unsplash.com/photo-1543340904-1613be2b4d20?w=800"/>,
-        options: ["Madrid", "Rome", "Paris", "Berlin"],
-        answer: 2,
-      },
-      {
-        country: "Japan",
-        image:< img  src= "https://images.unsplash.com/photo-1582538401733-1c1b5d432be5?w=800"/>,
-        options: ["Seoul", "Tokyo", "Beijing", "Bangkok"],
-        answer: 1,
-      },
-      {
-        country: "Brazil",
-        image: <img src= "https://images.unsplash.com/photo-1576086213369-97a306d36512?w=800"/>,
-        options: ["Brasília", "Rio de Janeiro", "Lima", "Buenos Aires"],
-        answer: 0,
-      }
-    ];
+  {
+    "country": "Albania",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Skanderbeg_Square_Tirana_Albania.jpg",
+    "options": [
+      "Bucharest",
+      "Madrid",
+      "Andorra la Vella",
+      "Tirana"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Andorra",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Andorra_la_Vella_-_panoramio.jpg",
+    "options": [
+      "Andorra la Vella",
+      "Riga",
+      "Ankara",
+      "Athens"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "Armenia",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/3/37/Republic_Square_Yerevan.jpg",
+    "options": [
+      "Sofia",
+      "Reykjavik",
+      "Warsaw",
+      "Yerevan"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Austria",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/4/42/Vienna_Parliament.jpg",
+    "options": [
+      "Stockholm",
+      "Vienna",
+      "Tirana",
+      "Astana"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Azerbaijan",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/8/88/Baku_Flame_Towers.jpg",
+    "options": [
+      "Valletta",
+      "Minsk",
+      "Belgrade",
+      "Baku"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Belarus",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Minsk_Victory_Square.jpg",
+    "options": [
+      "Prague",
+      "Sofia",
+      "Minsk",
+      "Belgrade"
+    ],
+    "answer": 2
+  },
+  {
+    "country": "Belgium",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/6/60/Brussels_Grand_Place.jpg",
+    "options": [
+      "Luxembourg",
+      "Ankara",
+      "Tallinn",
+      "Brussels"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Bosnia and Herzegovina",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Sarajevo_Old_Town.jpg",
+    "options": [
+      "Sarajevo",
+      "Zagreb",
+      "Amsterdam",
+      "Belgrade"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "Bulgaria",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/e/ed/St_Alexander_Nevsky_Cathedral_in_Sofia.jpg",
+    "options": [
+      "Sofia",
+      "Dublin",
+      "Valletta",
+      "San Marino"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "Croatia",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Zagreb_Ban_Jela\u010di\u0107_Square.jpg",
+    "options": [
+      "Sarajevo",
+      "Bern",
+      "Tirana",
+      "Zagreb"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Cyprus",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Nicosia_Cyprus_old_city.jpg",
+    "options": [
+      "Brussels",
+      "Vatican City",
+      "Nicosia",
+      "Ankara"
+    ],
+    "answer": 2
+  },
+  {
+    "country": "Czech Republic",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Prague_Castle_and_Charles_Bridge.jpg",
+    "options": [
+      "Prague",
+      "Monaco",
+      "Oslo",
+      "Rome"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "Denmark",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Nyhavn_Copenhagen.jpg",
+    "options": [
+      "Reykjavik",
+      "Sofia",
+      "Copenhagen",
+      "Chisinau"
+    ],
+    "answer": 2
+  },
+  {
+    "country": "Estonia",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/9/96/Tallinn_Old_Town_view.jpg",
+    "options": [
+      "Budapest",
+      "Tallinn",
+      "San Marino",
+      "Belgrade"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Finland",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/6/64/Helsinki_Cathedral_Senate_Square.jpg",
+    "options": [
+      "Tallinn",
+      "Tirana",
+      "Riga",
+      "Helsinki"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "France",
+    "image": "https://images.unsplash.com/photo-1543340904-1613be2b4d20?w=800",
+    "options": [
+      "Paris",
+      "Budapest",
+      "Berlin",
+      "San Marino"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "Georgia",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/0/01/Tbilisi_Sameba_Cathedral.jpg",
+    "options": [
+      "Zagreb",
+      "Nicosia",
+      "Tbilisi",
+      "Skopje"
+    ],
+    "answer": 2
+  },
+  {
+    "country": "Germany",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/8/88/Brandenburg_Gate_Berlin.jpg",
+    "options": [
+      "Skopje",
+      "Berlin",
+      "London",
+      "Luxembourg"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Greece",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Acropolis_of_Athens.jpg",
+    "options": [
+      "Vienna",
+      "Athens",
+      "Brussels",
+      "Moscow"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Hungary",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/5/51/Budapest_Parliament.jpg",
+    "options": [
+      "Ljubljana",
+      "Dublin",
+      "Sofia",
+      "Budapest"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Iceland",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/3/36/Hallgr\u00edmskirkja_Reykjav\u00edk.jpg",
+    "options": [
+      "Reykjavik",
+      "Yerevan",
+      "Warsaw",
+      "Sarajevo"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "Ireland",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/5/52/Dublin_Ha%27penny_Bridge.jpg",
+    "options": [
+      "Amsterdam",
+      "Dublin",
+      "Berlin",
+      "Vaduz"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Italy",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Colosseum_in_Rome.jpg",
+    "options": [
+      "Rome",
+      "Yerevan",
+      "Prague",
+      "Vaduz"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "Kazakhstan",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/8/85/Astana_Baiterek.jpg",
+    "options": [
+      "Sofia",
+      "Prague",
+      "Tbilisi",
+      "Astana"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Kosovo",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Pristina_Newborn_monument.jpg",
+    "options": [
+      "Copenhagen",
+      "Chisinau",
+      "Pristina",
+      "Yerevan"
+    ],
+    "answer": 2
+  },
+  {
+    "country": "Latvia",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Riga_Old_Town.jpg",
+    "options": [
+      "Belgrade",
+      "Dublin",
+      "Riga",
+      "Copenhagen"
+    ],
+    "answer": 2
+  },
+  {
+    "country": "Liechtenstein",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/3/32/Vaduz_Castle_Liechtenstein.jpg",
+    "options": [
+      "Dublin",
+      "Vaduz",
+      "Zagreb",
+      "Berlin"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Lithuania",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/5/55/Vilnius_old_town.jpg",
+    "options": [
+      "Skopje",
+      "Dublin",
+      "Bucharest",
+      "Vilnius"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Luxembourg",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Luxembourg_Palace.jpg",
+    "options": [
+      "Luxembourg",
+      "London",
+      "Warsaw",
+      "Zagreb"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "Malta",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/2/27/Valletta_cityscape.jpg",
+    "options": [
+      "Tbilisi",
+      "Copenhagen",
+      "Valletta",
+      "Baku"
+    ],
+    "answer": 2
+  },
+  {
+    "country": "Moldova",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Chisinau_Cathedral.jpg",
+    "options": [
+      "Berlin",
+      "Sarajevo",
+      "Ljubljana",
+      "Chisinau"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Monaco",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/2/26/Monaco_Panorama.jpg",
+    "options": [
+      "Monaco",
+      "Astana",
+      "Amsterdam",
+      "Bern"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "Montenegro",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Podgorica_bridge.jpg",
+    "options": [
+      "Vilnius",
+      "Amsterdam",
+      "Astana",
+      "Podgorica"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Netherlands",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Amsterdam_Canals.jpg",
+    "options": [
+      "Amsterdam",
+      "Dublin",
+      "Vaduz",
+      "Baku"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "North Macedonia",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Skopje_City_Center.jpg",
+    "options": [
+      "Riga",
+      "Skopje",
+      "Tbilisi",
+      "Sarajevo"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Norway",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d8/Oslo_Royal_Palace.jpg",
+    "options": [
+      "Kyiv",
+      "Oslo",
+      "Moscow",
+      "San Marino"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Poland",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Warsaw_Old_Town.jpg",
+    "options": [
+      "Nicosia",
+      "Warsaw",
+      "Monaco",
+      "Astana"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Portugal",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Lisbon_cityscape.jpg",
+    "options": [
+      "Sofia",
+      "Vienna",
+      "Lisbon",
+      "Vaduz"
+    ],
+    "answer": 2
+  },
+  {
+    "country": "Romania",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Bucharest_Parliament.jpg",
+    "options": [
+      "Brussels",
+      "Sarajevo",
+      "Bucharest",
+      "Pristina"
+    ],
+    "answer": 2
+  },
+  {
+    "country": "Russia",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/1/17/Moscow_Red_Square.jpg",
+    "options": [
+      "Moscow",
+      "Tbilisi",
+      "Astana",
+      "Yerevan"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "San Marino",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/6/6c/San_Marino_old_town.jpg",
+    "options": [
+      "Paris",
+      "Brussels",
+      "San Marino",
+      "Berlin"
+    ],
+    "answer": 2
+  },
+  {
+    "country": "Serbia",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Belgrade_Kalemegdan.jpg",
+    "options": [
+      "Vatican City",
+      "Belgrade",
+      "Bratislava",
+      "San Marino"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Slovakia",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/4/42/Bratislava_Castle.jpg",
+    "options": [
+      "Yerevan",
+      "Bratislava",
+      "Warsaw",
+      "Stockholm"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Slovenia",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Ljubljana_cityscape.jpg",
+    "options": [
+      "Ljubljana",
+      "Luxembourg",
+      "Reykjavik",
+      "Vaduz"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "Spain",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Madrid_Palacio_Real.jpg",
+    "options": [
+      "Bratislava",
+      "Berlin",
+      "Dublin",
+      "Madrid"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Sweden",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d8/Stockholm_Gamla_Stan.jpg",
+    "options": [
+      "Budapest",
+      "Prague",
+      "Stockholm",
+      "Astana"
+    ],
+    "answer": 2
+  },
+  {
+    "country": "Switzerland",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/2/27/Bern_City_View.jpg",
+    "options": [
+      "Budapest",
+      "Bern",
+      "Oslo",
+      "Moscow"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Turkey",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Ankara_Kocatepe_Mosque.jpg",
+    "options": [
+      "Kyiv",
+      "Ankara",
+      "Riga",
+      "Bucharest"
+    ],
+    "answer": 1
+  },
+  {
+    "country": "Ukraine",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Kyiv_Independence_Square.jpg",
+    "options": [
+      "Kyiv",
+      "Riga",
+      "Tbilisi",
+      "Yerevan"
+    ],
+    "answer": 0
+  },
+  {
+    "country": "United Kingdom",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d8/London_Big_Ben.jpg",
+    "options": [
+      "Yerevan",
+      "Paris",
+      "Athens",
+      "London"
+    ],
+    "answer": 3
+  },
+  {
+    "country": "Vatican City",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/3/39/Vatican_St_Peter%27s_Basilica.jpg",
+    "options": [
+      "Stockholm",
+      "Riga",
+      "Vatican City",
+      "Madrid"
+    ],
+    "answer": 2
+  }
+];
 
     let currentQuestion = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 10;
 
     function startGame() {
       document.getElementById("startScreen").style.display = "none";
       document.getElementById("quizScreen").style.display = "flex";
+      score = 0;
+      currentQuestion = 0;
       loadQuestion();
     }
 
@@ -115,12 +678,33 @@
         btn.innerText = q.options[index];
       });
       document.getElementById("feedback").innerText = "";
+      timeLeft = 10;
+      document.getElementById("timer").innerText = `Time: ${timeLeft}`;
+      clearInterval(timer);
+      timer = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      timeLeft--;
+      document.getElementById("timer").innerText = `Time: ${timeLeft}`;
+      if (timeLeft === 0) {
+        clearInterval(timer);
+        showFeedback(false);
+      }
     }
 
     function chooseAnswer(index) {
+      clearInterval(timer);
       const q = questions[currentQuestion];
-      if (index === q.answer) {
+      const isCorrect = index === q.answer;
+      showFeedback(isCorrect);
+    }
+
+    function showFeedback(isCorrect) {
+      if (isCorrect) {
         document.getElementById("feedback").innerText = "✅ Correct!";
+        score++;
+        document.getElementById("score").innerText = `Score: ${score}`;
       } else {
         document.getElementById("feedback").innerText = "❌ Wrong!";
       }
@@ -129,7 +713,7 @@
         if (currentQuestion < questions.length) {
           loadQuestion();
         } else {
-          document.getElementById("quizScreen").innerHTML = '<h2>Game Over!</h2><p>Thanks for playing.</p>';
+          document.getElementById("quizScreen").innerHTML = `<h2>Game Over!</h2><p>Final Score: ${score}</p>`;
         }
       }, 1500);
     }
