@@ -3,52 +3,77 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Игра: Страна — Столица (Сложности, Звуки, Анимации)</title>
+<title>Игра: Страна — Столица (Мульти-язык, Меню, Музыка)</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-  
+  * {
+    box-sizing: border-box;
+  }
   body {
     font-family: 'Montserrat', sans-serif;
     background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     display: flex;
     justify-content: center;
+    align-items: center;
     min-height: 100vh;
     color: #222;
+    user-select: none;
   }
-  .container {
+  #app {
     background: #fff;
     max-width: 480px;
     width: 100%;
     border-radius: 15px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    padding: 20px 25px 30px;
-    margin: 20px;
+    padding: 25px 30px 35px;
+  }
+  h1, h2 {
+    text-align: center;
+    margin: 15px 0 25px;
+    color: #2c3e50;
+  }
+  button, select {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+  }
+  /* --- Главное меню --- */
+  #menu {
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: hidden;
   }
-  h1 {
-    color: #2c3e50;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-  #difficulty-select {
-    margin-bottom: 15px;
-    font-weight: 600;
+  #menu label {
+    margin: 8px 0 5px;
     font-size: 16px;
+  }
+  #menu select, #menu button {
     width: 100%;
+    max-width: 320px;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 2px solid #2980b9;
+    margin-bottom: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  #menu select:focus, #menu button:hover {
+    background-color: #2980b9;
+    color: white;
+  }
+
+  /* --- Игра --- */
+  #game {
+    display: none;
+    flex-direction: column;
+    align-items: center;
   }
   #country {
     font-size: 28px;
     font-weight: 700;
     margin: 10px 0 15px;
     text-align: center;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s forwards;
   }
   #flag {
     width: 280px;
@@ -58,9 +83,6 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     margin-bottom: 20px;
     border: 2px solid #3498db;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s forwards 0.1s;
   }
   #options {
     width: 100%;
@@ -70,16 +92,12 @@
     padding: 12px 15px;
     margin: 8px 0;
     font-size: 18px;
-    font-weight: 600;
     border-radius: 8px;
     border: 2px solid #2980b9;
     background-color: #3498db;
     color: white;
     cursor: pointer;
     transition: background-color 0.3s, box-shadow 0.2s;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s forwards;
   }
   #options button:hover:not(:disabled) {
     background-color: #2980b9;
@@ -132,97 +150,196 @@
     font-weight: 700;
     min-height: 32px;
     text-align: center;
-    opacity: 0;
-    transition: opacity 0.4s;
+  }
+  #back-button {
+    margin-top: 25px;
+    background-color: #7f8c8d;
+    border-color: #95a5a6;
+    font-size: 16px;
+    padding: 10px 15px;
+  }
+  #back-button:hover {
+    background-color: #95a5a6;
+    color: white;
   }
   #footer {
     margin-top: 30px;
     font-size: 14px;
     color: #7f8c8d;
-  }
-
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    text-align: center;
   }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Игра: Страна — Столица</h1>
+<div id="app">
+  <!-- Главное меню -->
+  <div id="menu">
+    <h1>Страна — Столица</h1>
 
-  <select id="difficulty-select" aria-label="Выберите уровень сложности">
-    <option value="easy">Легкий (20 сек, 10 стран)</option>
-    <option value="medium" selected>Средний (15 сек, 20 стран)</option>
-    <option value="hard">Сложный (10 сек, все страны)</option>
-  </select>
+    <label for="lang-select">Язык / Language:</label>
+    <select id="lang-select" aria-label="Выберите язык">
+      <option value="ru">Русский</option>
+      <option value="en">English</option>
+    </select>
 
-  <div id="country">Загрузка...</div>
-  <img id="flag" src="" alt="Флаг страны" />
-  
-  <div id="options"></div>
+    <label for="difficulty-select" id="difficulty-label">Выберите уровень сложности:</label>
+    <select id="difficulty-select" aria-label="Выберите уровень сложности">
+      <option value="easy">Легкий (20 сек, 10 стран)</option>
+      <option value="medium" selected>Средний (15 сек, 20 стран)</option>
+      <option value="hard">Сложный (10 сек, все страны)</option>
+    </select>
 
-  <div id="timer-container">
-    <div id="timer-bar"></div>
+    <label for="music-toggle" id="music-label">Фоновая музыка:</label>
+    <select id="music-toggle" aria-label="Включить или выключить музыку">
+      <option value="on">Включена</option>
+      <option value="off" selected>Выключена</option>
+    </select>
+
+    <label for="sounds-toggle" id="sounds-label">Звуки ответов:</label>
+    <select id="sounds-toggle" aria-label="Включить или выключить звуки">
+      <option value="on" selected>Включены</option>
+      <option value="off">Выключены</option>
+    </select>
+
+    <button id="start-button">Начать игру / Start Game</button>
   </div>
-  <div id="timer-text">Время: 15 сек</div>
 
-  <div id="score">Очки: 0</div>
-  <div id="result"></div>
+  <!-- Игровой экран -->
+  <div id="game" aria-live="polite" aria-atomic="true" role="region">
+    <h2 id="game-title">Игра: Страна — Столица</h2>
 
-  <div id="footer">© 2025 Твоя Игра</div>
+    <div id="country">Загрузка...</div>
+    <img id="flag" src="" alt="Флаг страны" />
+
+    <div id="options"></div>
+
+    <div id="timer-container">
+      <div id="timer-bar"></div>
+    </div>
+    <div id="timer-text">Время: 15 сек</div>
+
+    <div id="score">Очки: 0</div>
+    <div id="result"></div>
+
+    <button id="back-button">В главное меню / Back to menu</button>
+  </div>
 </div>
 
 <!-- Звуки -->
-<audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
-<audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
-<audio id="sound-timeout" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+<audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
+<audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" preload="auto"></audio>
+<audio id="sound-timeout" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+
+<!-- Фоновая музыка -->
+<audio id="background-music" src="https://cdn.pixabay.com/download/audio/2022/02/23/audio_23e8e92927.mp3?filename=bossa-nova-instrumental-30303.mp3" loop preload="auto"></audio>
 
 <script>
-  const dataFull = [
+(() => {
+  // Переводы
+  const translations = {
+    ru: {
+      title: 'Игра: Страна — Столица',
+      loading: 'Загрузка...',
+      time: 'Время',
+      score: 'Очки',
+      correct: 'Верно! +{points} очков 🎉',
+      wrong: 'Неверно! Правильный ответ: {answer}',
+      timeout: 'Время вышло! Правильный ответ: {answer}',
+      gameOver: 'Игра окончена! Ваш итоговый счёт: {score} очков',
+      languageLabel: 'Язык / Language:',
+      difficultyLabel: 'Выберите уровень сложности:',
+      musicLabel: 'Фоновая музыка:',
+      soundsLabel: 'Звуки ответов:',
+      startGame: 'Начать игру / Start Game',
+      backMenu: 'В главное меню / Back to menu',
+      difficultyEasy: 'Легкий (20 сек, 10 стран)',
+      difficultyMedium: 'Средний (15 сек, 20 стран)',
+      difficultyHard: 'Сложный (10 сек, все страны)'
+    },
+    en: {
+      title: 'Game: Country — Capital',
+      loading: 'Loading...',
+      time: 'Time',
+      score: 'Score',
+      correct: 'Correct! +{points} points 🎉',
+      wrong: 'Wrong! Correct answer: {answer}',
+      timeout: 'Time\'s up! Correct answer: {answer}',
+      gameOver: 'Game over! Your final score: {score} points',
+      languageLabel: 'Language / Язык:',
+      difficultyLabel: 'Choose difficulty level:',
+      musicLabel: 'Background music:',
+      soundsLabel: 'Answer sounds:',
+      startGame: 'Start Game / Начать игру',
+      backMenu: 'Back to menu / В главное меню',
+      difficultyEasy: 'Easy (20 sec, 10 countries)',
+      difficultyMedium: 'Medium (15 sec, 20 countries)',
+      difficultyHard: 'Hard (10 sec, all countries)'
+    }
+  };
+
+  // Полный список стран Европы (с флагами)
+  const countriesData = [
     { country: "Австрия", capital: "Вена", flag: "https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg" },
+    { country: "Албания", capital: "Тирана", flag: "https://upload.wikimedia.org/wikipedia/commons/3/36/Flag_of_Albania.svg" },
+    { country: "Андорра", capital: "Андорра-ла-Велья", flag: "https://upload.wikimedia.org/wikipedia/commons/1/19/Flag_of_Andorra.svg" },
+    { country: "Беларусь", capital: "Минск", flag: "https://upload.wikimedia.org/wikipedia/commons/8/85/Flag_of_Belarus.svg" },
     { country: "Бельгия", capital: "Брюссель", flag: "https://upload.wikimedia.org/wikipedia/commons/6/65/Flag_of_Belgium.svg" },
+    { country: "Босния и Герцеговина", capital: "Сараево", flag: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Flag_of_Bosnia_and_Herzegovina.svg" },
     { country: "Болгария", capital: "София", flag: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg" },
+    { country: "Ватикан", capital: "Ватикан", flag: "https://upload.wikimedia.org/wikipedia/commons/0/00/Flag_of_the_Vatican_City.svg" },
     { country: "Венгрия", capital: "Будапешт", flag: "https://upload.wikimedia.org/wikipedia/commons/c/c1/Flag_of_Hungary.svg" },
+    { country: "Германия", capital: "Берлин", flag: "https://upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg" },
     { country: "Греция", capital: "Афины", flag: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Greece.svg" },
     { country: "Дания", capital: "Копенгаген", flag: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Flag_of_Denmark.svg" },
+    { country: "Исландия", capital: "Рейкьявик", flag: "https://upload.wikimedia.org/wikipedia/commons/c/ce/Flag_of_Iceland.svg" },
     { country: "Ирландия", capital: "Дублин", flag: "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg" },
     { country: "Испания", capital: "Мадрид", flag: "https://upload.wikimedia.org/wikipedia/en/9/9a/Flag_of_Spain.svg" },
     { country: "Италия", capital: "Рим", flag: "https://upload.wikimedia.org/wikipedia/en/0/03/Flag_of_Italy.svg" },
+    { country: "Казахстан", capital: "Астана", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Flag_of_Kazakhstan.svg" },
     { country: "Кипр", capital: "Никосия", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Flag_of_Cyprus.svg" },
     { country: "Латвия", capital: "Рига", flag: "https://upload.wikimedia.org/wikipedia/commons/8/84/Flag_of_Latvia.svg" },
     { country: "Литва", capital: "Вильнюс", flag: "https://upload.wikimedia.org/wikipedia/commons/1/11/Flag_of_Lithuania.svg" },
+    { country: "Лихтенштейн", capital: "Вадуц", flag: "https://upload.wikimedia.org/wikipedia/commons/4/47/Flag_of_Liechtenstein.svg" },
     { country: "Люксембург", capital: "Люксембург", flag: "https://upload.wikimedia.org/wikipedia/commons/d/da/Flag_of_Luxembourg.svg" },
     { country: "Мальта", capital: "Валлетта", flag: "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Malta.svg" },
+    { country: "Молдавия", capital: "Кишинёв", flag: "https://upload.wikimedia.org/wikipedia/commons/2/27/Flag_of_Moldova.svg" },
+    { country: "Монако", capital: "Монако", flag: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Flag_of_Monaco.svg" },
+    { country: "Черногория", capital: "Подгорица", flag: "https://upload.wikimedia.org/wikipedia/commons/6/64/Flag_of_Montenegro.svg" },
     { country: "Нидерланды", capital: "Амстердам", flag: "https://upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg" },
     { country: "Норвегия", capital: "Осло", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Norway.svg" },
     { country: "Польша", capital: "Варшава", flag: "https://upload.wikimedia.org/wikipedia/en/1/12/Flag_of_Poland.svg" },
     { country: "Португалия", capital: "Лиссабон", flag: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg" },
     { country: "Россия", capital: "Москва", flag: "https://upload.wikimedia.org/wikipedia/en/f/f3/Flag_of_Russia.svg" },
     { country: "Румыния", capital: "Бухарест", flag: "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Romania.svg" },
+    { country: "Сан-Марино", capital: "Сан-Марино", flag: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Flag_of_San_Marino.svg" },
     { country: "Сербия", capital: "Белград", flag: "https://upload.wikimedia.org/wikipedia/commons/f/ff/Flag_of_Serbia.svg" },
     { country: "Словакия", capital: "Братислава", flag: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Flag_of_Slovakia.svg" },
     { country: "Словения", capital: "Любляна", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f0/Flag_of_Slovenia.svg" },
+    { country: "Украина", capital: "Киев", flag: "https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Ukraine.svg" },
     { country: "Финляндия", capital: "Хельсинки", flag: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Flag_of_Finland.svg" },
     { country: "Франция", capital: "Париж", flag: "https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg" },
     { country: "Хорватия", capital: "Загреб", flag: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Flag_of_Croatia.svg" },
+    { country: "Черногория", capital: "Подгорица", flag: "https://upload.wikimedia.org/wikipedia/commons/6/64/Flag_of_Montenegro.svg" },
     { country: "Чехия", capital: "Прага", flag: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Czech_Republic.svg" },
     { country: "Швеция", capital: "Стокгольм", flag: "https://upload.wikimedia.org/wikipedia/en/4/4c/Flag_of_Sweden.svg" },
     { country: "Швейцария", capital: "Берн", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Switzerland.svg" },
     { country: "Эстония", capital: "Таллин", flag: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Flag_of_Estonia.svg" },
+    { country: "Грузия", capital: "Тбилиси", flag: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Flag_of_Georgia.svg" }
   ];
 
-  let data = [];
-  let currentIndex = 0;
-  let score = 0;
-  let timeLimit = 15;
-  let timeLeft = timeLimit;
-  let timerId;
+  // Элементы интерфейса
+  const app = document.getElementById('app');
+  const menu = document.getElementById('menu');
+  const game = document.getElementById('game');
 
-  // Элементы
+  const langSelect = document.getElementById('lang-select');
+  const difficultySelect = document.getElementById('difficulty-select');
+  const musicToggle = document.getElementById('music-toggle');
+  const soundsToggle = document.getElementById('sounds-toggle');
+  const startButton = document.getElementById('start-button');
+
+  const gameTitle = document.getElementById('game-title');
   const countryEl = document.getElementById('country');
   const flagEl = document.getElementById('flag');
   const optionsEl = document.getElementById('options');
@@ -230,37 +347,73 @@
   const timerTextEl = document.getElementById('timer-text');
   const scoreEl = document.getElementById('score');
   const resultEl = document.getElementById('result');
-  const difficultySelect = document.getElementById('difficulty-select');
+  const backButton = document.getElementById('back-button');
 
   // Звуки
   const soundCorrect = document.getElementById('sound-correct');
   const soundWrong = document.getElementById('sound-wrong');
   const soundTimeout = document.getElementById('sound-timeout');
+  const backgroundMusic = document.getElementById('background-music');
 
-  function shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+  let lang = 'ru';
+  let difficulty = 'medium';
+  let musicOn = false;
+  let soundsOn = true;
+
+  let currentQuestionIndex = 0;
+  let score = 0;
+  let timeLimit = 15;
+  let timeLeft = timeLimit;
+  let timerId = null;
+  let questions = [];
+
+  // Мягкость звуков (громкость)
+  soundCorrect.volume = 0.3;
+  soundWrong.volume = 0.3;
+  soundTimeout.volume = 0.3;
+  backgroundMusic.volume = 0.15;
+
+  function translateUI() {
+    const t = translations[lang];
+    document.title = t.title;
+    gameTitle.textContent = t.title;
+    startButton.textContent = t.startGame;
+    backButton.textContent = t.backMenu;
+    document.querySelector('label[for="lang-select"]').textContent = t.languageLabel;
+    document.querySelector('label[for="difficulty-select"]').textContent = t.difficultyLabel;
+    document.querySelector('label[for="music-toggle"]').textContent = t.musicLabel;
+    document.querySelector('label[for="sounds-toggle"]').textContent = t.soundsLabel;
+
+    // Обновляем options сложности
+    difficultySelect.options[0].text = t.difficultyEasy;
+    difficultySelect.options[1].text = t.difficultyMedium;
+    difficultySelect.options[2].text = t.difficultyHard;
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length -1; i > 0; i--) {
+      const j = Math.floor(Math.random()*(i+1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
   }
 
-  function generateOptions(correctCapital) {
-    const capitals = dataFull.map(item => item.capital).filter(c => c !== correctCapital);
-    shuffleArray(capitals);
+  function pickOptions(correctCapital) {
+    const capitals = countriesData.map(c => c.capital).filter(c => c !== correctCapital);
+    shuffle(capitals);
     const options = capitals.slice(0, 3);
     options.push(correctCapital);
-    shuffleArray(options);
+    shuffle(options);
     return options;
   }
 
-  function updateTimerDisplay() {
-    timerTextEl.textContent = `Время: ${timeLeft.toFixed(1)} сек`;
-    const widthPercent = (timeLeft / timeLimit) * 100;
-    timerBarEl.style.width = `${widthPercent}%`;
+  function updateTimerBar() {
+    timerTextEl.textContent = `${translations[lang].time}: ${timeLeft.toFixed(1)} ${lang==='ru'?'сек':'sec'}`;
+    const percent = (timeLeft / timeLimit) * 100;
+    timerBarEl.style.width = percent + '%';
 
-    if (widthPercent > 60) {
+    if (percent > 60) {
       timerBarEl.style.background = 'linear-gradient(90deg, #27ae60, #2ecc71)';
-    } else if (widthPercent > 30) {
+    } else if (percent > 30) {
       timerBarEl.style.background = 'linear-gradient(90deg, #f1c40f, #f39c12)';
     } else {
       timerBarEl.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
@@ -268,147 +421,192 @@
   }
 
   function disableOptions() {
-    const buttons = optionsEl.querySelectorAll('button');
-    buttons.forEach(btn => btn.disabled = true);
+    const btns = optionsEl.querySelectorAll('button');
+    btns.forEach(b => b.disabled = true);
+  }
+
+  function clearOptionsStyles() {
+    const btns = optionsEl.querySelectorAll('button');
+    btns.forEach(b => {
+      b.classList.remove('correct', 'wrong');
+    });
+  }
+
+  function playSound(sound) {
+    if (!soundsOn) return;
+    sound.currentTime = 0;
+    sound.play();
   }
 
   function showQuestion() {
-    resultEl.style.opacity = 0;
-    const item = data[currentIndex];
-    countryEl.style.opacity = 0;
-    flagEl.style.opacity = 0;
-    optionsEl.style.opacity = 0;
+    clearOptionsStyles();
+    resultEl.textContent = '';
+    resultEl.style.color = '#222';
 
-    setTimeout(() => {
-      countryEl.textContent = item.country;
-      flagEl.src = item.flag;
-      flagEl.alt = `Флаг ${item.country}`;
+    if (currentQuestionIndex >= questions.length) {
+      alert(translations[lang].gameOver.replace('{score}', score));
+      goToMenu();
+      return;
+    }
 
-      const options = generateOptions(item.capital);
-      optionsEl.innerHTML = '';
-      options.forEach(option => {
-        const btn = document.createElement('button');
-        btn.textContent = option;
-        btn.onclick = () => {
-          clearInterval(timerId);
-          disableOptions();
+    const q = questions[currentQuestionIndex];
+    countryEl.textContent = q.country;
+    flagEl.src = q.flag;
+    flagEl.alt = `Flag of ${q.country}`;
 
-          if (option === item.capital) {
-            // Правильно
-            soundCorrect.play();
-            // Подсветка кнопки
-            btn.classList.add('correct');
-            // Начисление очков с бонусом
-            const speedBonus = Math.round(timeLeft);
-            const pointsEarned = 10 + speedBonus;
-            score += pointsEarned;
-            resultEl.textContent = `Верно! +${pointsEarned} очков 🎉`;
-          } else {
-            soundWrong.play();
-            btn.classList.add('wrong');
-            // Подсвечиваем правильный ответ
-            Array.from(optionsEl.children).forEach(b => {
-              if (b.textContent === item.capital) {
-                b.classList.add('correct');
-              }
-            });
-            resultEl.textContent = `Неверно! Правильный ответ: ${item.capital}`;
-          }
-          scoreEl.textContent = `Очки: ${score}`;
-          resultEl.style.opacity = 1;
+    optionsEl.innerHTML = '';
+    const options = pickOptions(q.capital);
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.textContent = opt;
+      btn.onclick = () => {
+        clearInterval(timerId);
+        disableOptions();
+        if (opt === q.capital) {
+          playSound(soundCorrect);
+          btn.classList.add('correct');
+          // Начисляем очки с бонусом по оставшемуся времени
+          const pointsEarned = 10 + Math.floor(timeLeft);
+          score += pointsEarned;
+          resultEl.textContent = translations[lang].correct.replace('{points}', pointsEarned);
+          resultEl.style.color = '#27ae60';
+        } else {
+          playSound(soundWrong);
+          btn.classList.add('wrong');
+          // Подсветим правильный ответ
+          Array.from(optionsEl.children).forEach(b => {
+            if (b.textContent === q.capital) b.classList.add('correct');
+          });
+          resultEl.textContent = translations[lang].wrong.replace('{answer}', q.capital);
+          resultEl.style.color = '#e74c3c';
+        }
+        scoreEl.textContent = `${translations[lang].score}: ${score}`;
+        setTimeout(() => {
+          currentQuestionIndex++;
+          showQuestion();
+          startTimer();
+        }, 2500);
+      };
+      optionsEl.appendChild(btn);
+    });
 
-          setTimeout(nextQuestion, 2500);
-        };
-        optionsEl.appendChild(btn);
-      });
-
-      // Анимация появления
-      countryEl.style.opacity = 1;
-      flagEl.style.opacity = 1;
-      optionsEl.style.opacity = 1;
-
-      startTimer();
-    }, 400);
+    scoreEl.textContent = `${translations[lang].score}: ${score}`;
+    timeLeft = timeLimit;
+    updateTimerBar();
   }
 
   function startTimer() {
+    clearInterval(timerId);
     timeLeft = timeLimit;
-    updateTimerDisplay();
-    timerBarEl.style.width = '100%';
+    updateTimerBar();
 
     timerId = setInterval(() => {
       timeLeft -= 0.1;
       if (timeLeft <= 0) {
         clearInterval(timerId);
-        timeLeft = 0;
-        updateTimerDisplay();
         disableOptions();
-        soundTimeout.play();
-        resultEl.textContent = `Время вышло! Правильный ответ: ${data[currentIndex].capital}`;
-        resultEl.style.opacity = 1;
-        // Подсвечиваем правильный ответ
+        playSound(soundTimeout);
+        const q = questions[currentQuestionIndex];
+        // Подсветим правильный ответ
         Array.from(optionsEl.children).forEach(b => {
-          if (b.textContent === data[currentIndex].capital) {
-            b.classList.add('correct');
-          }
+          if (b.textContent === q.capital) b.classList.add('correct');
         });
-        setTimeout(nextQuestion, 2500);
+        resultEl.textContent = translations[lang].timeout.replace('{answer}', q.capital);
+        resultEl.style.color = '#e74c3c';
+
+        setTimeout(() => {
+          currentQuestionIndex++;
+          showQuestion();
+          startTimer();
+        }, 2500);
       } else {
-        updateTimerDisplay();
+        updateTimerBar();
       }
     }, 100);
   }
 
-  function nextQuestion() {
-    currentIndex++;
-    if (currentIndex >= data.length) {
-      alert(`Игра окончена! Ваш итоговый счёт: ${score} очков`);
-      currentIndex = 0;
-      score = 0;
-      scoreEl.textContent = `Очки: ${score}`;
-    }
-    showQuestion();
-  }
-
-  function setDifficulty(level) {
-    switch(level) {
+  function setDifficulty(value) {
+    difficulty = value;
+    switch (value) {
       case 'easy':
-        data = [...dataFull];
-        shuffleArray(data);
-        data = data.slice(0, 10);
+        questions = [...countriesData];
+        shuffle(questions);
+        questions = questions.slice(0, 10);
         timeLimit = 20;
         break;
       case 'medium':
-        data = [...dataFull];
-        shuffleArray(data);
-        data = data.slice(0, 20);
+        questions = [...countriesData];
+        shuffle(questions);
+        questions = questions.slice(0, 20);
         timeLimit = 15;
         break;
       case 'hard':
-        data = [...dataFull];
-        shuffleArray(data);
+        questions = [...countriesData];
+        shuffle(questions);
         timeLimit = 10;
         break;
       default:
-        data = [...dataFull];
-        shuffleArray(data);
+        questions = [...countriesData];
+        shuffle(questions);
         timeLimit = 15;
     }
-    currentIndex = 0;
-    score = 0;
-    scoreEl.textContent = `Очки: ${score}`;
-    timerTextEl.textContent = `Время: ${timeLimit} сек`;
   }
 
-  difficultySelect.addEventListener('change', () => {
+  function startGame() {
+    lang = langSelect.value;
     setDifficulty(difficultySelect.value);
+    musicOn = musicToggle.value === 'on';
+    soundsOn = soundsToggle.value === 'on';
+
+    translateUI();
+
+    currentQuestionIndex = 0;
+    score = 0;
+
+    menu.style.display = 'none';
+    game.style.display = 'flex';
+
+    if (musicOn) backgroundMusic.play();
+    else backgroundMusic.pause();
+
     showQuestion();
-  });
+    startTimer();
+  }
 
-  // Инициализация
-  setDifficulty(difficultySelect.value);
-  showQuestion();
+  function goToMenu() {
+    clearInterval(timerId);
+    backgroundMusic.pause();
 
+    menu.style.display = 'flex';
+    game.style.display = 'none';
+  }
+
+  // Перевод UI при загрузке
+  translateUI();
+
+  // Слушатели
+  startButton.onclick = startGame;
+  backButton.onclick = goToMenu;
+
+  // При смене языка меняем тексты меню
+  langSelect.onchange = translateUI;
+
+  // При смене музыки меняем плеер, если игра запущена
+  musicToggle.onchange = () => {
+    musicOn = musicToggle.value === 'on';
+    if (musicOn && game.style.display === 'flex') {
+      backgroundMusic.play();
+    } else {
+      backgroundMusic.pause();
+    }
+  };
+
+  // Звуки
+  soundsToggle.onchange = () => {
+    soundsOn = soundsToggle.value === 'on';
+  };
+
+})();
 </script>
 
 </body>
