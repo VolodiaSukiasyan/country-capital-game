@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Игра: Страна — Столица (Европа)</title>
+<title>Игра: Страна — Столица (Сложности, Звуки, Анимации)</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
   
@@ -28,16 +28,27 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: hidden;
   }
   h1 {
     color: #2c3e50;
     margin-bottom: 10px;
+    text-align: center;
+  }
+  #difficulty-select {
+    margin-bottom: 15px;
+    font-weight: 600;
+    font-size: 16px;
+    width: 100%;
   }
   #country {
     font-size: 28px;
     font-weight: 700;
     margin: 10px 0 15px;
     text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s forwards;
   }
   #flag {
     width: 280px;
@@ -47,6 +58,9 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     margin-bottom: 20px;
     border: 2px solid #3498db;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s forwards 0.1s;
   }
   #options {
     width: 100%;
@@ -63,6 +77,9 @@
     color: white;
     cursor: pointer;
     transition: background-color 0.3s, box-shadow 0.2s;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s forwards;
   }
   #options button:hover:not(:disabled) {
     background-color: #2980b9;
@@ -71,6 +88,16 @@
   #options button:disabled {
     cursor: default;
     opacity: 0.6;
+  }
+  .correct {
+    background-color: #27ae60 !important;
+    border-color: #1e8449 !important;
+    box-shadow: 0 0 15px #27ae60cc !important;
+  }
+  .wrong {
+    background-color: #e74c3c !important;
+    border-color: #c0392b !important;
+    box-shadow: 0 0 15px #e74c3ccc !important;
   }
   #timer-container {
     width: 100%;
@@ -84,7 +111,7 @@
     height: 100%;
     width: 100%;
     background: linear-gradient(90deg, #27ae60, #2ecc71);
-    transition: width 0.2s linear;
+    transition: width 0.1s linear;
   }
   #timer-text {
     text-align: center;
@@ -105,18 +132,33 @@
     font-weight: 700;
     min-height: 32px;
     text-align: center;
+    opacity: 0;
+    transition: opacity 0.4s;
   }
   #footer {
     margin-top: 30px;
     font-size: 14px;
     color: #7f8c8d;
   }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Игра: Страна — Столица (Европа)</h1>
+  <h1>Игра: Страна — Столица</h1>
+
+  <select id="difficulty-select" aria-label="Выберите уровень сложности">
+    <option value="easy">Легкий (20 сек, 10 стран)</option>
+    <option value="medium" selected>Средний (15 сек, 20 стран)</option>
+    <option value="hard">Сложный (10 сек, все страны)</option>
+  </select>
 
   <div id="country">Загрузка...</div>
   <img id="flag" src="" alt="Флаг страны" />
@@ -134,9 +176,13 @@
   <div id="footer">© 2025 Твоя Игра</div>
 </div>
 
+<!-- Звуки -->
+<audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+<audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
+<audio id="sound-timeout" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
 <script>
-  // Полный список стран Европы с правильными столицами и фото флагов (URL из Wikipedia Commons)
-  const data = [
+  const dataFull = [
     { country: "Австрия", capital: "Вена", flag: "https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg" },
     { country: "Бельгия", capital: "Брюссель", flag: "https://upload.wikimedia.org/wikipedia/commons/6/65/Flag_of_Belgium.svg" },
     { country: "Болгария", capital: "София", flag: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg" },
@@ -164,133 +210,4 @@
     { country: "Франция", capital: "Париж", flag: "https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg" },
     { country: "Хорватия", capital: "Загреб", flag: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Flag_of_Croatia.svg" },
     { country: "Чехия", capital: "Прага", flag: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Czech_Republic.svg" },
-    { country: "Швеция", capital: "Стокгольм", flag: "https://upload.wikimedia.org/wikipedia/en/4/4c/Flag_of_Sweden.svg" },
-    { country: "Швейцария", capital: "Берн", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Switzerland.svg" },
-    { country: "Эстония", capital: "Таллин", flag: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Flag_of_Estonia.svg" },
-  ];
-
-  let currentIndex = 0;
-  let score = 0;
-  let timeLimit = 15; // секунд на вопрос
-  let timeLeft = timeLimit;
-  let timerId;
-
-  // HTML элементы
-  const countryEl = document.getElementById('country');
-  const flagEl = document.getElementById('flag');
-  const optionsEl = document.getElementById('options');
-  const timerBarEl = document.getElementById('timer-bar');
-  const timerTextEl = document.getElementById('timer-text');
-  const scoreEl = document.getElementById('score');
-  const resultEl = document.getElementById('result');
-
-  function shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-  }
-
-  function generateOptions(correctCapital) {
-    // Собираем все столицы кроме правильной
-    const capitals = data.map(item => item.capital).filter(c => c !== correctCapital);
-    shuffleArray(capitals);
-    const options = capitals.slice(0, 3);
-    options.push(correctCapital);
-    shuffleArray(options);
-    return options;
-  }
-
-  function startTimer() {
-    timeLeft = timeLimit;
-    updateTimerDisplay();
-    timerBarEl.style.width = '100%';
-
-    timerId = setInterval(() => {
-      timeLeft -= 0.1;
-      if (timeLeft <= 0) {
-        clearInterval(timerId);
-        timeLeft = 0;
-        updateTimerDisplay();
-        disableOptions();
-        showResult(false, true);
-        setTimeout(nextQuestion, 2000);
-      } else {
-        updateTimerDisplay();
-      }
-    }, 100);
-  }
-
-  function updateTimerDisplay() {
-    timerTextEl.textContent = `Время: ${timeLeft.toFixed(1)} сек`;
-    const widthPercent = (timeLeft / timeLimit) * 100;
-    timerBarEl.style.width = `${widthPercent}%`;
-
-    // Изменяем цвет таймера в зависимости от времени
-    if (widthPercent > 60) {
-      timerBarEl.style.background = 'linear-gradient(90deg, #27ae60, #2ecc71)'; // зелёный
-    } else if (widthPercent > 30) {
-      timerBarEl.style.background = 'linear-gradient(90deg, #f1c40f, #f39c12)'; // желтый
-    } else {
-      timerBarEl.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)'; // красный
-    }
-  }
-
-  function disableOptions() {
-    const buttons = optionsEl.querySelectorAll('button');
-    buttons.forEach(btn => btn.disabled = true);
-  }
-
-  function showQuestion() {
-    resultEl.textContent = '';
-    const item = data[currentIndex];
-    countryEl.textContent = item.country;
-    flagEl.src = item.flag;
-    flagEl.alt = `Флаг ${item.country}`;
-
-    const options = generateOptions(item.capital);
-    optionsEl.innerHTML = '';
-    options.forEach(option => {
-      const btn = document.createElement('button');
-      btn.textContent = option;
-      btn.onclick = () => {
-        clearInterval(timerId);
-        disableOptions();
-
-        const correct = option === item.capital;
-        if (correct) {
-          // Начислим очки + бонус за скорость (макс 10 баллов + скорость)
-          const speedBonus = Math.round(timeLeft);
-          const pointsEarned = 10 + speedBonus;
-          score += pointsEarned;
-          resultEl.textContent = `Верно! +${pointsEarned} очков 🎉`;
-        } else {
-          resultEl.textContent = `Неверно! Правильный ответ: ${item.capital}`;
-        }
-        scoreEl.textContent = `Очки: ${score}`;
-
-        setTimeout(nextQuestion, 2500);
-      };
-      optionsEl.appendChild(btn);
-    });
-
-    startTimer();
-  }
-
-  function nextQuestion() {
-    currentIndex++;
-    if (currentIndex >= data.length) {
-      alert(`Игра окончена! Ваш итоговый счёт: ${score} очков`);
-      currentIndex = 0;
-      score = 0;
-      scoreEl.textContent = `Очки: ${score}`;
-    }
-    showQuestion();
-  }
-
-  // Запуск
-  showQuestion();
-</script>
-
-</body>
-</html>
+    { country: "Швеция", capital: "Стокгольм", flag: "https://upload.wik
