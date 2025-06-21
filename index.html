@@ -1,89 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Country - Capital Game</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-  * { box-sizing: border-box; }
-  body {
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-    margin: 0; padding: 0;
-    display: flex; justify-content: center; align-items: center;
-    min-height: 100vh;
-    color: #fff;
-    user-select: none;
-  }
-  #app {
-    background: #1e1e2f;
-    max-width: 480px;
-    width: 100%;
-    border-radius: 20px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-    padding: 30px 40px 40px;
-    text-align: center;
-  }
-  h1 {
-    font-weight: 700;
-    font-size: 2.8rem;
-    margin-bottom: 35px;
-    letter-spacing: 2px;
-    color: #f5f5f7;
-  }
-  button, select {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 18px;
-  }
-  #menu {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 22px;
-  }
-  #start-button {
-    width: 100%;
-    max-width: 280px;
-    background: #6a11cb;
-    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 14px 0;
-    cursor: pointer;
-    box-shadow: 0 6px 15px #2575fccc;
-    transition: background 0.3s ease;
-  }
-  #start-button:hover {
-    background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
-  }
-  #difficulty-select {
-    width: 280px;
-    padding: 10px 14px;
-    font-size: 18px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    background: #444566;
-    color: white;
-    box-shadow: 0 4px 12px #2575fcaa;
-  }
-</style>
-</head>
-<body>
+<!-- ...предыдущая часть кода выше -->
+
+<div id="result-modal">
+  <h2>Game Over!</h2>
+  <p id="final-score-text"></p>
+  <button onclick="returnToMenu()">Back to Menu</button>
+</div>
+
+<audio id="sound-correct" src="https://freesound.org/data/previews/587/587252_8044600-lq.mp3" preload="auto"></audio>
+<audio id="sound-wrong" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2852e0a5b1.mp3?filename=fail-234710.mp3" preload="auto"></audio>
+<audio id="background-music" src="https://freesound.org/data/previews/410/410574_5121236-lq.mp3" loop preload="auto"></audio>
 
 <script>
-// Добавим Армению, Косово, Великобританию, Северную Македонию и Сан-Марино
-const additionalCountries = [
-  { country: "Armenia", capital: "Yerevan", flag: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Flag_of_Armenia.svg" },
-  { country: "Kosovo", capital: "Pristina", flag: "https://upload.wikimedia.org/wikipedia/commons/1/1f/Flag_of_Kosovo.svg" },
-  { country: "United Kingdom", capital: "London", flag: "https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" },
-  { country: "North Macedonia", capital: "Skopje", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f8/Flag_of_Macedonia.svg" },
-  { country: "San Marino", capital: "San Marino", flag: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Flag_of_San_Marino.svg" }
-];
+let soundOn = true;
+let musicOn = true;
+const backgroundMusic = document.getElementById("background-music");
+const resultModal = document.getElementById("result-modal");
+const finalScoreText = document.getElementById("final-score-text");
 
-countriesData.push(...additionalCountries);
+function endGame(score) {
+  finalScoreText.textContent = `Your Score: ${score}`;
+  resultModal.style.display = "block";
+  backgroundMusic.pause();
+}
+
+function returnToMenu() {
+  resultModal.style.display = "none";
+  document.getElementById("game").style.display = "none";
+  document.getElementById("menu").style.display = "flex";
+}
+
+function toggleMusic() {
+  musicOn = !musicOn;
+  const musicIcon = document.getElementById("music-toggle-icon");
+  if (musicOn) {
+    musicIcon.classList.remove("muted");
+    backgroundMusic.play().catch(() => {});
+  } else {
+    musicIcon.classList.add("muted");
+    backgroundMusic.pause();
+  }
+}
 </script>
 
-</body>
-</html>
+<!-- Добавьте кнопку для управления музыкой: -->
+<button id="music-toggle-icon" onclick="toggleMusic()" aria-label="Toggle Music">
+  <svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5l-5 5H3z"/></svg>
+</button>
