@@ -1,72 +1,84 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Игра: Страна — Столица с подсказками и рекордами</title>
+<title>Country - Capital Game</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
   * { box-sizing: border-box; }
   body {
     font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
     margin: 0; padding: 0;
     display: flex; justify-content: center; align-items: center;
     min-height: 100vh;
-    color: #222;
+    color: #fff;
     user-select: none;
   }
   #app {
-    background: #fff;
+    background: #1e1e2f;
     max-width: 480px;
     width: 100%;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    padding: 25px 30px 35px;
-  }
-  h1, h2 {
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+    padding: 30px 40px 40px;
     text-align: center;
-    margin: 15px 0 25px;
-    color: #2c3e50;
+  }
+  h1 {
+    font-weight: 700;
+    font-size: 2.8rem;
+    margin-bottom: 35px;
+    letter-spacing: 2px;
+    color: #f5f5f7;
   }
   button, select {
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
+    font-size: 18px;
   }
-
-  /* Главное меню */
   #menu {
     display: flex; flex-direction: column; align-items: center;
+    gap: 22px;
   }
-  #menu label {
-    margin: 8px 0 5px;
-    font-size: 16px;
-  }
-  #menu select, #menu button {
-    width: 100%; max-width: 320px;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: 2px solid #2980b9;
-    margin-bottom: 18px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  #menu select:focus, #menu button:hover {
-    background-color: #2980b9;
+  #start-button {
+    width: 100%;
+    max-width: 280px;
+    background: #6a11cb;
+    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
     color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 0;
+    cursor: pointer;
+    box-shadow: 0 6px 15px #2575fccc;
+    transition: background 0.3s ease;
+  }
+  #start-button:hover {
+    background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
   }
 
-  /* Подсказки */
-  #tips {
-    font-size: 14px;
-    background: #ecf0f1;
-    border-radius: 10px;
-    padding: 12px 15px;
-    margin-bottom: 20px;
-    color: #34495e;
-    max-height: 150px;
-    overflow-y: auto;
+  /* Звуковая кнопка */
+  #sound-toggle {
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    background: transparent;
+    border: none;
+    margin: 0 auto;
+    filter: drop-shadow(0 0 2px rgba(255 255 255 / 0.5));
+    transition: filter 0.3s ease;
+  }
+  #sound-toggle:hover {
+    filter: drop-shadow(0 0 6px #fff);
+  }
+  #sound-toggle svg {
+    width: 100%;
+    height: 100%;
+    fill: #fff;
+  }
+  #sound-toggle.muted svg {
+    fill: #888;
   }
 
   /* Игра */
@@ -74,61 +86,70 @@
     display: none;
     flex-direction: column;
     align-items: center;
+    color: #f5f5f7;
+  }
+  #question-number {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #a0a0c8;
+    font-weight: 600;
   }
   #country {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
-    margin: 10px 0 15px;
-    text-align: center;
+    margin-bottom: 16px;
   }
   #flag {
     width: 280px;
     height: 160px;
-    border-radius: 12px;
+    border-radius: 16px;
     object-fit: cover;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    margin-bottom: 20px;
-    border: 2px solid #3498db;
+    box-shadow: 0 5px 18px #2575fcbb;
+    margin-bottom: 25px;
+    border: 3px solid #6a11cb;
   }
   #options {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
   #options button {
     width: 100%;
-    padding: 12px 15px;
-    margin: 8px 0;
-    font-size: 18px;
-    border-radius: 8px;
-    border: 2px solid #2980b9;
-    background-color: #3498db;
+    padding: 14px;
+    font-size: 20px;
+    border-radius: 14px;
+    border: none;
+    background: #2575fc;
     color: white;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s, box-shadow 0.2s;
+    transition: background-color 0.3s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 12px #2575fcaa;
   }
   #options button:hover:not(:disabled) {
-    background-color: #2980b9;
-    box-shadow: 0 0 10px #2980b9aa;
+    background: #6a11cb;
+    box-shadow: 0 6px 16px #6a11cbcc;
   }
   #options button:disabled {
     cursor: default;
-    opacity: 0.6;
+    opacity: 0.7;
   }
   .correct {
     background-color: #27ae60 !important;
-    border-color: #1e8449 !important;
     box-shadow: 0 0 15px #27ae60cc !important;
   }
   .wrong {
     background-color: #e74c3c !important;
-    border-color: #c0392b !important;
     box-shadow: 0 0 15px #e74c3ccc !important;
   }
+
   #timer-container {
     width: 100%;
-    background: #ddd;
-    border-radius: 10px;
-    height: 20px;
-    margin: 20px 0 10px;
+    background: #333455;
+    border-radius: 12px;
+    height: 22px;
+    margin: 24px 0 10px;
     overflow: hidden;
   }
   #timer-bar {
@@ -138,59 +159,36 @@
     transition: width 0.1s linear;
   }
   #timer-text {
-    text-align: center;
+    margin-top: 6px;
     font-weight: 600;
-    margin-top: -5px;
     font-size: 16px;
-    color: #34495e;
+    color: #bbbbee;
   }
   #score {
     font-size: 20px;
     font-weight: 700;
-    color: #2c3e50;
-    margin-top: 10px;
+    margin-top: 12px;
+    color: #d1d1ff;
   }
   #result {
-    margin-top: 18px;
+    margin-top: 22px;
     font-size: 22px;
     font-weight: 700;
-    min-height: 32px;
-    text-align: center;
+    min-height: 38px;
   }
   #back-button {
-    margin-top: 25px;
-    background-color: #7f8c8d;
-    border-color: #95a5a6;
-    font-size: 16px;
-    padding: 10px 15px;
+    margin-top: 28px;
+    background: transparent;
+    border: 2px solid #bbbbee;
+    border-radius: 14px;
+    color: #bbbbee;
+    font-size: 17px;
+    padding: 10px 22px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
   }
   #back-button:hover {
-    background-color: #95a5a6;
-    color: white;
-  }
-
-  /* Таблица рекордов */
-  #leaderboard {
-    margin-top: 20px;
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 10px 15px;
-    max-height: 200px;
-    overflow-y: auto;
-    font-size: 14px;
-    color: #34495e;
-  }
-  #leaderboard h3 {
-    margin-top: 0;
-    text-align: center;
-    font-weight: 700;
-  }
-  #leaderboard ol {
-    padding-left: 20px;
-    margin: 0;
-  }
-  #leaderboard li {
-    margin-bottom: 6px;
+    background-color: #bbbbee22;
   }
 
 </style>
@@ -199,71 +197,43 @@
 
 <div id="app">
 
-  <!-- Главное меню -->
-  <div id="menu" role="region" aria-label="Главное меню">
-    <h1>Страна — Столица</h1>
+  <div id="menu" role="region" aria-label="Main menu">
+    <h1>Country — Capital</h1>
 
-    <label for="lang-select">Язык / Language:</label>
-    <select id="lang-select" aria-label="Выберите язык">
-      <option value="ru">Русский</option>
-      <option value="en">English</option>
+    <label for="difficulty-select" style="display:none;">Difficulty (hidden, fixed medium)</label>
+    <select id="difficulty-select" style="display:none;">
+      <option value="medium" selected>Medium (15 sec, 20 countries)</option>
     </select>
 
-    <label for="difficulty-select" id="difficulty-label">Выберите уровень сложности:</label>
-    <select id="difficulty-select" aria-label="Выберите уровень сложности">
-      <option value="easy">Легкий (20 сек, 10 стран)</option>
-      <option value="medium" selected>Средний (15 сек, 20 стран)</option>
-      <option value="hard">Сложный (10 сек, все страны)</option>
-    </select>
+    <button id="start-button" aria-label="Start Game">Start Game</button>
 
-    <label for="music-toggle" id="music-label">Фоновая музыка:</label>
-    <select id="music-toggle" aria-label="Включить или выключить музыку">
-      <option value="on">Включена</option>
-      <option value="off" selected>Выключена</option>
-    </select>
-
-    <label for="sounds-toggle" id="sounds-label">Звуки ответов:</label>
-    <select id="sounds-toggle" aria-label="Включить или выключить звуки">
-      <option value="on" selected>Включены</option>
-      <option value="off">Выключены</option>
-    </select>
-
-    <div id="tips" aria-live="polite" aria-atomic="true">
-      <strong>Советы:</strong><br>
-      - Выбирайте правильную столицу страны.<br>
-      - Чем быстрее ответите, тем больше очков получите.<br>
-      - Уровень сложности влияет на количество вопросов и время.<br>
-      - Можно включить/выключить музыку и звуки.<br>
-      - Удачи!
-    </div>
-
-    <button id="start-button">Начать игру / Start Game</button>
+    <button id="sound-toggle" aria-pressed="true" aria-label="Toggle sound and music">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path id="sound-icon" d="M3 9v6h4l5 5V4L7 9H3z"/>
+        <path id="sound-wave" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"/>
+        <path id="sound-wave2" d="M19.5 12c0-3.04-1.67-5.64-4.5-6.93v2.06c1.42 1.03 2.25 2.65 2.25 4.87s-.83 3.84-2.25 4.87v2.06c2.83-1.29 4.5-3.89 4.5-6.93z"/>
+      </svg>
+    </button>
   </div>
 
-  <!-- Игровой экран -->
   <div id="game" role="region" aria-live="polite" aria-atomic="true">
-    <h2 id="game-title">Игра: Страна — Столица</h2>
+    <div id="question-number" aria-label="Question number"></div>
+    <div id="country" aria-live="polite"></div>
+    <img id="flag" src="" alt="Country flag" />
 
-    <div id="country" aria-live="polite" aria-atomic="true">Загрузка...</div>
-    <img id="flag" src="" alt="Флаг страны" />
+    <div id="options" role="group" aria-label="Answer options"></div>
 
-    <div id="options" role="group" aria-label="Варианты ответа"></div>
-
-    <div id="timer-container" aria-label="Таймер">
+    <div id="timer-container" aria-label="Timer">
       <div id="timer-bar"></div>
     </div>
-    <div id="timer-text">Время: 15 сек</div>
+    <div id="timer-text"></div>
 
-    <div id="score">Очки: 0</div>
-    <div id="result" aria-live="polite" aria-atomic="true"></div>
+    <div id="score"></div>
+    <div id="result" aria-live="polite"></div>
 
-    <button id="back-button">В главное меню / Back to menu</button>
-
-    <div id="leaderboard" aria-live="polite" aria-atomic="true">
-      <h3>Таблица рекордов / Leaderboard</h3>
-      <ol id="leaderboard-list"></ol>
-    </div>
+    <button id="back-button">Back to menu</button>
   </div>
+
 </div>
 
 <!-- Звуки -->
@@ -276,123 +246,60 @@
 
 <script>
 (() => {
-  // Переводы
-  const translations = {
-    ru: {
-      title: 'Игра: Страна — Столица',
-      loading: 'Загрузка...',
-      time: 'Время',
-      score: 'Очки',
-      correct: 'Верно! +{points} очков 🎉',
-      wrong: 'Неверно! Правильный ответ: {answer}',
-      timeout: 'Время вышло! Правильный ответ: {answer}',
-      gameOver: 'Игра окончена! Ваш итоговый счёт: {score} очков',
-      languageLabel: 'Язык / Language:',
-      difficultyLabel: 'Выберите уровень сложности:',
-      musicLabel: 'Фоновая музыка:',
-      soundsLabel: 'Звуки ответов:',
-      startGame: 'Начать игру / Start Game',
-      backMenu: 'В главное меню / Back to menu',
-      difficultyEasy: 'Легкий (20 сек, 10 стран)',
-      difficultyMedium: 'Средний (15 сек, 20 стран)',
-      difficultyHard: 'Сложный (10 сек, все страны)',
-      tips: [
-        'Выбирайте правильную столицу страны.',
-        'Чем быстрее ответите, тем больше очков получите.',
-        'Уровень сложности влияет на количество вопросов и время.',
-        'Можно включить/выключить музыку и звуки.',
-        'Удачи!'
-      ],
-      leaderboardTitle: 'Таблица рекордов'
-    },
-    en: {
-      title: 'Game: Country — Capital',
-      loading: 'Loading...',
-      time: 'Time',
-      score: 'Score',
-      correct: 'Correct! +{points} points 🎉',
-      wrong: 'Wrong! Correct answer: {answer}',
-      timeout: 'Time\'s up! Correct answer: {answer}',
-      gameOver: 'Game over! Your final score: {score} points',
-      languageLabel: 'Language / Язык:',
-      difficultyLabel: 'Choose difficulty level:',
-      musicLabel: 'Background music:',
-      soundsLabel: 'Answer sounds:',
-      startGame: 'Start Game / Начать игру',
-      backMenu: 'Back to menu / В главное меню',
-      difficultyEasy: 'Easy (20 sec, 10 countries)',
-      difficultyMedium: 'Medium (15 sec, 20 countries)',
-      difficultyHard: 'Hard (10 sec, all countries)',
-      tips: [
-        'Choose the correct capital of the country.',
-        'The faster you answer, the more points you get.',
-        'Difficulty level affects number of questions and time.',
-        'You can turn music and sounds on or off.',
-        'Good luck!'
-      ],
-      leaderboardTitle: 'Leaderboard'
-    }
-  };
-
-  // Страны Европы с флагами (без изменений)
+  // Countries data (Europe + Georgia)
   const countriesData = [
-    { country: "Австрия", capital: "Вена", flag: "https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg" },
-    { country: "Албания", capital: "Тирана", flag: "https://upload.wikimedia.org/wikipedia/commons/3/36/Flag_of_Albania.svg" },
-    { country: "Андорра", capital: "Андорра-ла-Велья", flag: "https://upload.wikimedia.org/wikipedia/commons/1/19/Flag_of_Andorra.svg" },
-    { country: "Беларусь", capital: "Минск", flag: "https://upload.wikimedia.org/wikipedia/commons/8/85/Flag_of_Belarus.svg" },
-    { country: "Бельгия", capital: "Брюссель", flag: "https://upload.wikimedia.org/wikipedia/commons/6/65/Flag_of_Belgium.svg" },
-    { country: "Босния и Герцеговина", capital: "Сараево", flag: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Flag_of_Bosnia_and_Herzegovina.svg" },
-    { country: "Болгария", capital: "София", flag: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg" },
-    { country: "Ватикан", capital: "Ватикан", flag: "https://upload.wikimedia.org/wikipedia/commons/0/00/Flag_of_the_Vatican_City.svg" },
-    { country: "Венгрия", capital: "Будапешт", flag: "https://upload.wikimedia.org/wikipedia/commons/c/c1/Flag_of_Hungary.svg" },
-    { country: "Германия", capital: "Берлин", flag: "https://upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg" },
-    { country: "Греция", capital: "Афины", flag: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Greece.svg" },
-    { country: "Дания", capital: "Копенгаген", flag: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Flag_of_Denmark.svg" },
-    { country: "Исландия", capital: "Рейкьявик", flag: "https://upload.wikimedia.org/wikipedia/commons/c/ce/Flag_of_Iceland.svg" },
-    { country: "Ирландия", capital: "Дублин", flag: "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg" },
-    { country: "Испания", capital: "Мадрид", flag: "https://upload.wikimedia.org/wikipedia/en/9/9a/Flag_of_Spain.svg" },
-    { country: "Италия", capital: "Рим", flag: "https://upload.wikimedia.org/wikipedia/en/0/03/Flag_of_Italy.svg" },
-    { country: "Казахстан", capital: "Астана", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Flag_of_Kazakhstan.svg" },
-    { country: "Кипр", capital: "Никосия", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Flag_of_Cyprus.svg" },
-    { country: "Латвия", capital: "Рига", flag: "https://upload.wikimedia.org/wikipedia/commons/8/84/Flag_of_Latvia.svg" },
-    { country: "Литва", capital: "Вильнюс", flag: "https://upload.wikimedia.org/wikipedia/commons/1/11/Flag_of_Lithuania.svg" },
-    { country: "Лихтенштейн", capital: "Вадуц", flag: "https://upload.wikimedia.org/wikipedia/commons/4/47/Flag_of_Liechtenstein.svg" },
-    { country: "Люксембург", capital: "Люксембург", flag: "https://upload.wikimedia.org/wikipedia/commons/d/da/Flag_of_Luxembourg.svg" },
-    { country: "Мальта", capital: "Валлетта", flag: "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Malta.svg" },
-    { country: "Молдова", capital: "Кишинёв", flag: "https://upload.wikimedia.org/wikipedia/commons/2/27/Flag_of_Moldova.svg" },
-    { country: "Монако", capital: "Монако", flag: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Flag_of_Monaco.svg" },
-    { country: "Нидерланды", capital: "Амстердам", flag: "https://upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg" },
-    { country: "Норвегия", capital: "Осло", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Norway.svg" },
-    { country: "Польша", capital: "Варшава", flag: "https://upload.wikimedia.org/wikipedia/en/1/12/Flag_of_Poland.svg" },
-    { country: "Португалия", capital: "Лиссабон", flag: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg" },
-    { country: "Россия", capital: "Москва", flag: "https://upload.wikimedia.org/wikipedia/en/f/f3/Flag_of_Russia.svg" },
-    { country: "Румыния", capital: "Бухарест", flag: "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Romania.svg" },
-    { country: "Сербия", capital: "Белград", flag: "https://upload.wikimedia.org/wikipedia/commons/f/ff/Flag_of_Serbia.svg" },
-    { country: "Словакия", capital: "Братислава", flag: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Flag_of_Slovakia.svg" },
-    { country: "Словения", capital: "Любляна", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f0/Flag_of_Slovenia.svg" },
-    { country: "Украина", capital: "Киев", flag: "https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Ukraine.svg" },
-    { country: "Финляндия", capital: "Хельсинки", flag: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Flag_of_Finland.svg" },
-    { country: "Франция", capital: "Париж", flag: "https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg" },
-    { country: "Хорватия", capital: "Загреб", flag: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Flag_of_Croatia.svg" },
-    { country: "Черногория", capital: "Подгорица", flag: "https://upload.wikimedia.org/wikipedia/commons/6/64/Flag_of_Montenegro.svg" },
-    { country: "Чехия", capital: "Прага", flag: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Czech_Republic.svg" },
-    { country: "Швеция", capital: "Стокгольм", flag: "https://upload.wikimedia.org/wikipedia/en/4/4c/Flag_of_Sweden.svg" },
-    { country: "Швейцария", capital: "Берн", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Switzerland.svg" },
-    { country: "Эстония", capital: "Таллин", flag: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Flag_of_Estonia.svg" },
-    { country: "Грузия", capital: "Тбилиси", flag: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Flag_of_Georgia.svg" }
+    { country: "Austria", capital: "Vienna", flag: "https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg" },
+    { country: "Albania", capital: "Tirana", flag: "https://upload.wikimedia.org/wikipedia/commons/3/36/Flag_of_Albania.svg" },
+    { country: "Andorra", capital: "Andorra la Vella", flag: "https://upload.wikimedia.org/wikipedia/commons/1/19/Flag_of_Andorra.svg" },
+    { country: "Belarus", capital: "Minsk", flag: "https://upload.wikimedia.org/wikipedia/commons/8/85/Flag_of_Belarus.svg" },
+    { country: "Belgium", capital: "Brussels", flag: "https://upload.wikimedia.org/wikipedia/commons/6/65/Flag_of_Belgium.svg" },
+    { country: "Bosnia and Herzegovina", capital: "Sarajevo", flag: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Flag_of_Bosnia_and_Herzegovina.svg" },
+    { country: "Bulgaria", capital: "Sofia", flag: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg" },
+    { country: "Vatican City", capital: "Vatican City", flag: "https://upload.wikimedia.org/wikipedia/commons/0/00/Flag_of_the_Vatican_City.svg" },
+    { country: "Hungary", capital: "Budapest", flag: "https://upload.wikimedia.org/wikipedia/commons/c/c1/Flag_of_Hungary.svg" },
+    { country: "Germany", capital: "Berlin", flag: "https://upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg" },
+    { country: "Greece", capital: "Athens", flag: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Greece.svg" },
+    { country: "Denmark", capital: "Copenhagen", flag: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Flag_of_Denmark.svg" },
+    { country: "Iceland", capital: "Reykjavik", flag: "https://upload.wikimedia.org/wikipedia/commons/c/ce/Flag_of_Iceland.svg" },
+    { country: "Ireland", capital: "Dublin", flag: "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg" },
+    { country: "Spain", capital: "Madrid", flag: "https://upload.wikimedia.org/wikipedia/en/9/9a/Flag_of_Spain.svg" },
+    { country: "Italy", capital: "Rome", flag: "https://upload.wikimedia.org/wikipedia/en/0/03/Flag_of_Italy.svg" },
+    { country: "Cyprus", capital: "Nicosia", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Flag_of_Cyprus.svg" },
+    { country: "Latvia", capital: "Riga", flag: "https://upload.wikimedia.org/wikipedia/commons/8/84/Flag_of_Latvia.svg" },
+    { country: "Lithuania", capital: "Vilnius", flag: "https://upload.wikimedia.org/wikipedia/commons/1/11/Flag_of_Lithuania.svg" },
+    { country: "Liechtenstein", capital: "Vaduz", flag: "https://upload.wikimedia.org/wikipedia/commons/4/47/Flag_of_Liechtenstein.svg" },
+    { country: "Luxembourg", capital: "Luxembourg", flag: "https://upload.wikimedia.org/wikipedia/commons/d/da/Flag_of_Luxembourg.svg" },
+    { country: "Malta", capital: "Valletta", flag: "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Malta.svg" },
+    { country: "Moldova", capital: "Chisinau", flag: "https://upload.wikimedia.org/wikipedia/commons/2/27/Flag_of_Moldova.svg" },
+    { country: "Monaco", capital: "Monaco", flag: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Flag_of_Monaco.svg" },
+    { country: "Netherlands", capital: "Amsterdam", flag: "https://upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg" },
+    { country: "Norway", capital: "Oslo", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Norway.svg" },
+    { country: "Poland", capital: "Warsaw", flag: "https://upload.wikimedia.org/wikipedia/en/1/12/Flag_of_Poland.svg" },
+    { country: "Portugal", capital: "Lisbon", flag: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg" },
+    { country: "Russia", capital: "Moscow", flag: "https://upload.wikimedia.org/wikipedia/en/f/f3/Flag_of_Russia.svg" },
+    { country: "Romania", capital: "Bucharest", flag: "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Romania.svg" },
+    { country: "Serbia", capital: "Belgrade", flag: "https://upload.wikimedia.org/wikipedia/commons/f/ff/Flag_of_Serbia.svg" },
+    { country: "Slovakia", capital: "Bratislava", flag: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Flag_of_Slovakia.svg" },
+    { country: "Slovenia", capital: "Ljubljana", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f0/Flag_of_Slovenia.svg" },
+    { country: "Ukraine", capital: "Kyiv", flag: "https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Ukraine.svg" },
+    { country: "Finland", capital: "Helsinki", flag: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Flag_of_Finland.svg" },
+    { country: "France", capital: "Paris", flag: "https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg" },
+    { country: "Croatia", capital: "Zagreb", flag: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Flag_of_Croatia.svg" },
+    { country: "Montenegro", capital: "Podgorica", flag: "https://upload.wikimedia.org/wikipedia/commons/6/64/Flag_of_Montenegro.svg" },
+    { country: "Czech Republic", capital: "Prague", flag: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Czech_Republic.svg" },
+    { country: "Sweden", capital: "Stockholm", flag: "https://upload.wikimedia.org/wikipedia/en/4/4c/Flag_of_Sweden.svg" },
+    { country: "Switzerland", capital: "Bern", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Switzerland.svg" },
+    { country: "Estonia", capital: "Tallinn", flag: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Flag_of_Estonia.svg" },
+    { country: "Georgia", capital: "Tbilisi", flag: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Flag_of_Georgia.svg" }
   ];
 
-  // UI элементы
   const menu = document.getElementById('menu');
   const game = document.getElementById('game');
-
-  const langSelect = document.getElementById('lang-select');
-  const difficultySelect = document.getElementById('difficulty-select');
-  const musicToggle = document.getElementById('music-toggle');
-  const soundsToggle = document.getElementById('sounds-toggle');
   const startButton = document.getElementById('start-button');
+  const difficultySelect = document.getElementById('difficulty-select');
+  const soundToggle = document.getElementById('sound-toggle');
 
-  const gameTitle = document.getElementById('game-title');
+  const questionNumberEl = document.getElementById('question-number');
   const countryEl = document.getElementById('country');
   const flagEl = document.getElementById('flag');
   const optionsEl = document.getElementById('options');
@@ -402,60 +309,38 @@
   const resultEl = document.getElementById('result');
   const backButton = document.getElementById('back-button');
 
-  const leaderboardList = document.getElementById('leaderboard-list');
-
-  // Звуки
   const soundCorrect = document.getElementById('sound-correct');
   const soundWrong = document.getElementById('sound-wrong');
   const soundTimeout = document.getElementById('sound-timeout');
   const backgroundMusic = document.getElementById('background-music');
 
-  // Настройки по умолчанию
-  let lang = 'ru';
-  let difficulty = 'medium';
-  let musicOn = false;
-  let soundsOn = true;
+  // Звук и музыка включены?
+  let soundOn = true;
 
+  // Настройки игры
+  let difficulty = 'medium'; // фиксируем, спрятан селект
+  let timeLimit = 15; 
+  let questions = [];
   let currentQuestionIndex = 0;
   let score = 0;
-  let timeLimit = 15;
   let timeLeft = timeLimit;
   let timerId = null;
-  let questions = [];
 
-  // Громкость звуков (мягче)
+  // Звуки громкость мягкая
   soundCorrect.volume = 0.3;
   soundWrong.volume = 0.3;
   soundTimeout.volume = 0.3;
   backgroundMusic.volume = 0.15;
 
-  // Функция перевода интерфейса
-  function translateUI() {
-    const t = translations[lang];
-    document.title = t.title;
-    gameTitle.textContent = t.title;
-    startButton.textContent = t.startGame;
-    backButton.textContent = t.backMenu;
-
-    document.querySelector('label[for="lang-select"]').textContent = t.languageLabel;
-    document.querySelector('label[for="difficulty-select"]').textContent = t.difficultyLabel;
-    document.querySelector('label[for="music-toggle"]').textContent = t.musicLabel;
-    document.querySelector('label[for="sounds-toggle"]').textContent = t.soundsLabel;
-
-    difficultySelect.options[0].text = t.difficultyEasy;
-    difficultySelect.options[1].text = t.difficultyMedium;
-    difficultySelect.options[2].text = t.difficultyHard;
-  }
-
-  // Перемешивание массива (Fisher–Yates)
+  // Функция для перемешивания массива (Fisher-Yates)
   function shuffle(arr) {
-    for (let i = arr.length -1; i > 0; i--) {
-      const j = Math.floor(Math.random()*(i+1));
+    for(let i = arr.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
   }
 
-  // Выбираем варианты столиц
+  // Выбираем 3 неправильных варианта и добавляем правильный
   function pickOptions(correctCapital) {
     const capitals = countriesData.map(c => c.capital).filter(c => c !== correctCapital);
     shuffle(capitals);
@@ -465,9 +350,9 @@
     return options;
   }
 
-  // Обновление таймера визуально
+  // Обновить таймер визуально
   function updateTimerBar() {
-    timerTextEl.textContent = `${translations[lang].time}: ${timeLeft.toFixed(1)} ${lang==='ru'?'сек':'sec'}`;
+    timerTextEl.textContent = `Time: ${timeLeft.toFixed(1)} sec`;
     const percent = (timeLeft / timeLimit) * 100;
     timerBarEl.style.width = percent + '%';
 
@@ -493,7 +378,7 @@
   }
 
   function playSound(sound) {
-    if (!soundsOn) return;
+    if (!soundOn) return;
     sound.currentTime = 0;
     sound.play().catch(() => {});
   }
@@ -502,16 +387,16 @@
   function showQuestion() {
     clearOptionsStyles();
     resultEl.textContent = '';
-    resultEl.style.color = '#222';
+    resultEl.style.color = '#eee';
 
     if (currentQuestionIndex >= questions.length) {
-      alert(translations[lang].gameOver.replace('{score}', score));
-      saveScoreToServer(score);
-      goToMenu();
+      alert(`Game over! Your score: ${score}`);
+      stopGame();
       return;
     }
 
     const q = questions[currentQuestionIndex];
+    questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
     countryEl.textContent = q.country;
     flagEl.src = q.flag;
     flagEl.alt = `Flag of ${q.country}`;
@@ -527,10 +412,9 @@
         if (opt === q.capital) {
           playSound(soundCorrect);
           btn.classList.add('correct');
-          // Начисляем очки с бонусом по оставшемуся времени
           const pointsEarned = 10 + Math.floor(timeLeft);
           score += pointsEarned;
-          resultEl.textContent = translations[lang].correct.replace('{points}', pointsEarned);
+          resultEl.textContent = `Correct! +${pointsEarned} points`;
           resultEl.style.color = '#27ae60';
         } else {
           playSound(soundWrong);
@@ -539,20 +423,20 @@
           Array.from(optionsEl.children).forEach(b => {
             if (b.textContent === q.capital) b.classList.add('correct');
           });
-          resultEl.textContent = translations[lang].wrong.replace('{answer}', q.capital);
+          resultEl.textContent = `Wrong! Correct answer: ${q.capital}`;
           resultEl.style.color = '#e74c3c';
         }
-        scoreEl.textContent = `${translations[lang].score}: ${score}`;
+        scoreEl.textContent = `Score: ${score}`;
         setTimeout(() => {
           currentQuestionIndex++;
           showQuestion();
           startTimer();
-        }, 2500);
+        }, 2000);
       };
       optionsEl.appendChild(btn);
     });
 
-    scoreEl.textContent = `${translations[lang].score}: ${score}`;
+    scoreEl.textContent = `Score: ${score}`;
     timeLeft = timeLimit;
     updateTimerBar();
   }
@@ -569,200 +453,78 @@
         clearInterval(timerId);
         disableOptions();
         playSound(soundTimeout);
-        const q = questions[currentQuestionIndex];
         // Подсветим правильный ответ
+        const q = questions[currentQuestionIndex];
         Array.from(optionsEl.children).forEach(b => {
           if (b.textContent === q.capital) b.classList.add('correct');
         });
-        resultEl.textContent = translations[lang].timeout.replace('{answer}', q.capital);
+        resultEl.textContent = `Time's up! Correct answer: ${q.capital}`;
         resultEl.style.color = '#e74c3c';
 
         setTimeout(() => {
           currentQuestionIndex++;
           showQuestion();
           startTimer();
-        }, 2500);
+        }, 2000);
       } else {
         updateTimerBar();
       }
     }, 100);
   }
 
-  // Установка сложности
-  function setDifficulty(value) {
-    difficulty = value;
-    switch (value) {
-      case 'easy':
-        questions = [...countriesData];
-        shuffle(questions);
-        questions = questions.slice(0, 10);
-        timeLimit = 20;
-        break;
-      case 'medium':
-        questions = [...countriesData];
-        shuffle(questions);
-        questions = questions.slice(0, 20);
-        timeLimit = 15;
-        break;
-      case 'hard':
-        questions = [...countriesData];
-        shuffle(questions);
-        timeLimit = 10;
-        break;
-      default:
-        questions = [...countriesData];
-        shuffle(questions);
-        timeLimit = 15;
-    }
-  }
-
   // Старт игры
   function startGame() {
-    lang = langSelect.value;
-    setDifficulty(difficultySelect.value);
-    musicOn = musicToggle.value === 'on';
-    soundsOn = soundsToggle.value === 'on';
-
-    translateUI();
-
+    difficulty = difficultySelect.value; // всегда medium
+    timeLimit = 15;
+    questions = [...countriesData];
+    shuffle(questions);
+    questions = questions.slice(0, 20);
     currentQuestionIndex = 0;
     score = 0;
 
     menu.style.display = 'none';
     game.style.display = 'flex';
 
-    if (musicOn) {
+    if(soundOn) {
       backgroundMusic.play().catch(() => {});
-    } else {
-      backgroundMusic.pause();
     }
 
     showQuestion();
     startTimer();
-
-    loadLeaderboardFromServer();
   }
 
-  // Возврат в меню
-  function goToMenu() {
+  // Остановить игру, вернуть в меню
+  function stopGame() {
     clearInterval(timerId);
     backgroundMusic.pause();
+    backgroundMusic.currentTime = 0;
 
     menu.style.display = 'flex';
     game.style.display = 'none';
   }
 
-  // *** ТАБЛИЦА РЕКОРДОВ с "сервером" ***
-
-  // Примерный сервер - используем jsonbin.io (замени URL и ключи на свой сервис)
-  const leaderboardAPI = {
-    url: 'https://api.jsonbin.io/v3/b/649cc7e2d4c5ae1c09f6b25f', // примерный bin с записями
-    secretKey: 'YOUR_SECRET_KEY', // тут вставь свой ключ если нужен для записи (оставь пустым для read only)
-  };
-
-  // Функция загрузки рекордов
-  async function loadLeaderboardFromServer() {
-    leaderboardList.innerHTML = '<li>Загрузка...</li>';
-    try {
-      const response = await fetch(leaderboardAPI.url, {
-        headers: {
-          'X-Master-Key': leaderboardAPI.secretKey
-        }
-      });
-      if (!response.ok) throw new Error('Ошибка загрузки');
-      const data = await response.json();
-
-      // Предположим, данные в формате { record: [{name: 'User', score: 50}, ...] }
-      let records = data.record || data.records || [];
-      // Если не объект - попробуем массив сразу
-      if (!Array.isArray(records) && Array.isArray(data)) {
-        records = data;
-      }
-
-      if (records.length === 0) {
-        leaderboardList.innerHTML = '<li>Рекордов пока нет.</li>';
-        return;
-      }
-
-      // Сортируем по очкам по убыванию
-      records.sort((a,b) => b.score - a.score);
-
-      // Показываем максимум 10
-      leaderboardList.innerHTML = '';
-      records.slice(0,10).forEach((r, i) => {
-        leaderboardList.innerHTML += `<li>${i+1}. ${r.name || 'Игрок'} — ${r.score} очков</li>`;
-      });
-
-    } catch (e) {
-      leaderboardList.innerHTML = '<li>Ошибка загрузки рекордов.</li>';
-      console.error(e);
+  // Переключение звука и музыки
+  function toggleSound() {
+    soundOn = !soundOn;
+    if (soundOn) {
+      soundToggle.classList.remove('muted');
+      soundToggle.setAttribute('aria-pressed', 'true');
+      backgroundMusic.play().catch(() => {});
+    } else {
+      soundToggle.classList.add('muted');
+      soundToggle.setAttribute('aria-pressed', 'false');
+      backgroundMusic.pause();
     }
   }
 
-  // Функция сохранения рекорда
-  async function saveScoreToServer(scoreToSave) {
-    let playerName = prompt('Введите ваше имя для таблицы рекордов:', 'Игрок');
-    if (!playerName) playerName = 'Игрок';
+  // События
+  startButton.addEventListener('click', startGame);
+  backButton.addEventListener('click', stopGame);
+  soundToggle.addEventListener('click', toggleSound);
 
-    // Получаем текущие рекорды, добавляем новый и отправляем
-    try {
-      const response = await fetch(leaderboardAPI.url, {
-        headers: {
-          'X-Master-Key': leaderboardAPI.secretKey
-        }
-      });
-      if (!response.ok) throw new Error('Ошибка загрузки');
-
-      let data = await response.json();
-      let records = data.record || data.records || [];
-      if (!Array.isArray(records) && Array.isArray(data)) {
-        records = data;
-      }
-
-      records.push({ name: playerName, score: scoreToSave });
-      records.sort((a,b) => b.score - a.score);
-
-      // Отправляем обновлённые данные обратно
-      // В jsonbin.io нужен PUT запрос, с body JSON.stringify({record: records})
-      if (!leaderboardAPI.secretKey) {
-        alert('Запись рекорда невозможна: не указан секретный ключ API.');
-        return;
-      }
-      const putResp = await fetch(leaderboardAPI.url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': leaderboardAPI.secretKey
-        },
-        body: JSON.stringify({ record: records })
-      });
-      if (!putResp.ok) throw new Error('Ошибка сохранения рекорда');
-
-      alert('Рекорд сохранён!');
-
-      loadLeaderboardFromServer();
-
-    } catch(e) {
-      alert('Ошибка при сохранении рекорда. Попробуйте позже.');
-      console.error(e);
-    }
-  }
-
-  // Перевод интерфейса при загрузке страницы
-  translateUI();
-
-  // Слушатели событий
-  startButton.onclick = startGame;
-  backButton.onclick = goToMenu;
-  langSelect.onchange = translateUI;
-  musicToggle.onchange = () => {
-    musicOn = musicToggle.value === 'on';
-    if (musicOn && game.style.display === 'flex') backgroundMusic.play().catch(() => {});
-    else backgroundMusic.pause();
-  };
-  soundsToggle.onchange = () => {
-    soundsOn = soundsToggle.value === 'on';
-  };
+  // Инициализация иконки звука
+  soundToggle.classList.remove('muted');
+  soundToggle.setAttribute('aria-pressed', 'true');
 
 })();
 </script>
