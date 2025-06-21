@@ -1,225 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Country - Capital Game</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      margin: 0; padding: 0;
-      display: flex; justify-content: center; align-items: center;
-      height: 100vh; color: #fff;
-    }
-    #app {
-      background-color: #1e1e2f;
-      padding: 30px;
-      border-radius: 16px;
-      width: 90%; max-width: 480px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      text-align: center;
-      position: relative;
-    }
-    h1 { margin-bottom: 20px; }
-    #flag { width: 100%; height: auto; border-radius: 10px; }
-    .btn {
-      margin: 10px 0;
-      padding: 12px;
-      width: 100%;
-      background: #2575fc;
-      border: none;
-      color: white;
-      font-weight: bold;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .btn:hover { background: #6a11cb; }
-    .correct { background: #27ae60 !important; }
-    .wrong { background: #e74c3c !important; }
-    #resultBox {
-      display: none;
-      background: #333;
-      padding: 20px;
-      margin-top: 20px;
-      border-radius: 12px;
-      animation: fadeIn 0.5s ease-in-out;
-    }
-    #difficulty {
-      margin-bottom: 20px;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    #music-toggle {
-      background: none;
-      border: 2px solid white;
-      border-radius: 50%;
-      width: 40px; height: 40px;
-      color: white;
-      font-size: 18px;
-      cursor: pointer;
-      position: absolute;
-      top: 20px; right: 20px;
-    }
-    #timer {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: #f1c40f;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Country - Capital Game</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    margin: 0; padding: 0;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+    color: #fff;
+    user-select: none;
+  }
+  #app {
+    background: #1e1e2f;
+    max-width: 480px;
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+    padding: 30px 40px 40px;
+    text-align: center;
+  }
+  h1 {
+    font-weight: 700;
+    font-size: 2.8rem;
+    margin-bottom: 35px;
+    letter-spacing: 2px;
+    color: #f5f5f7;
+  }
+  button, select {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+  }
+  #menu {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 22px;
+  }
+  #start-button {
+    width: 100%;
+    max-width: 280px;
+    background: #6a11cb;
+    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 0;
+    cursor: pointer;
+    box-shadow: 0 6px 15px #2575fccc;
+    transition: background 0.3s ease;
+  }
+  #start-button:hover {
+    background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
+  }
+  #difficulty-select {
+    width: 280px;
+    padding: 10px 14px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: #444566;
+    color: white;
+    box-shadow: 0 4px 12px #2575fcaa;
+  }
+</style>
 </head>
 <body>
-<div id="app">
-  <h1>Country — Capital</h1>
-  <div id="difficulty">
-    <label for="level">Select difficulty:</label>
-    <select id="level">
-      <option value="easy">Easy</option>
-      <option value="medium" selected>Medium</option>
-      <option value="hard">Hard</option>
-    </select>
-    <button class="btn" onclick="startGame()">Start Game</button>
-  </div>
-  <div id="questionBox" style="display:none">
-    <div id="timer">Time: 15.0</div>
-    <h2 id="countryName">Loading...</h2>
-    <img id="flag" src="" alt="flag" />
-    <div id="options"></div>
-  </div>
-
-  <div id="resultBox">
-    <h2>Game Over!</h2>
-    <p>Your Score: <span id="finalScore"></span></p>
-    <button class="btn" onclick="restartGame()">Back to Menu</button>
-  </div>
-</div>
-
-<button id="music-toggle" onclick="toggleMusic()">♫</button>
-
-<audio id="correctSound" src="https://freesound.org/data/previews/587/587252_8044600-lq.mp3"></audio>
-<audio id="wrongSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2852e0a5b1.mp3?filename=fail-234710.mp3"></audio>
-<audio id="bgMusic" src="https://freesound.org/data/previews/410/410574_5121236-lq.mp3" loop></audio>
 
 <script>
-const countries = [...]; // Заменяется массивом всех стран Европы (оставлен для краткости)
+// Добавим Армению, Косово, Великобританию, Северную Македонию и Сан-Марино
+const additionalCountries = [
+  { country: "Armenia", capital: "Yerevan", flag: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Flag_of_Armenia.svg" },
+  { country: "Kosovo", capital: "Pristina", flag: "https://upload.wikimedia.org/wikipedia/commons/1/1f/Flag_of_Kosovo.svg" },
+  { country: "United Kingdom", capital: "London", flag: "https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" },
+  { country: "North Macedonia", capital: "Skopje", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f8/Flag_of_Macedonia.svg" },
+  { country: "San Marino", capital: "San Marino", flag: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Flag_of_San_Marino.svg" }
+];
 
-let current = 0;
-let score = 0;
-let totalQuestions = 10;
-let timer;
-let timeLeft = 15.0;
-const correctSound = document.getElementById("correctSound");
-const wrongSound = document.getElementById("wrongSound");
-const bgMusic = document.getElementById("bgMusic");
-const timerEl = document.getElementById("timer");
-
-function toggleMusic() {
-  if (bgMusic.paused) {
-    bgMusic.play();
-  } else {
-    bgMusic.pause();
-  }
-}
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-function startGame() {
-  const level = document.getElementById("level").value;
-  if (level === "easy") totalQuestions = 5;
-  else if (level === "medium") totalQuestions = 10;
-  else totalQuestions = countries.length;
-
-  shuffle(countries);
-  countries.splice(totalQuestions);
-  document.getElementById("difficulty").style.display = "none";
-  document.getElementById("questionBox").style.display = "block";
-  current = 0;
-  score = 0;
-  loadQuestion();
-}
-
-function updateTimer() {
-  clearInterval(timer);
-  timeLeft = 15.0;
-  timer = setInterval(() => {
-    timeLeft -= 0.1;
-    timerEl.textContent = `Time: ${timeLeft.toFixed(1)}`;
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      selectAnswer(false);
-    }
-  }, 100);
-}
-
-function loadQuestion() {
-  if (current >= countries.length) {
-    endGame();
-    return;
-  }
-
-  const q = countries[current];
-  document.getElementById("countryName").innerText = `${q.country} (${current + 1}/${countries.length})`;
-  document.getElementById("flag").src = q.flag;
-  const options = [q.capital];
-  while (options.length < 4) {
-    const rand = countries[Math.floor(Math.random() * countries.length)].capital;
-    if (!options.includes(rand)) options.push(rand);
-  }
-  shuffle(options);
-
-  const optDiv = document.getElementById("options");
-  optDiv.innerHTML = "";
-  options.forEach(opt => {
-    const btn = document.createElement("button");
-    btn.className = "btn";
-    btn.innerText = opt;
-    btn.onclick = () => selectAnswer(opt === q.capital, btn);
-    optDiv.appendChild(btn);
-  });
-  updateTimer();
-}
-
-function selectAnswer(isCorrect, btn = null) {
-  clearInterval(timer);
-  const buttons = document.querySelectorAll(".btn");
-  buttons.forEach(b => b.disabled = true);
-  const q = countries[current];
-  if (isCorrect) {
-    if (btn) btn.classList.add("correct");
-    correctSound.play();
-    score += 10 + Math.floor(timeLeft);
-  } else {
-    if (btn) btn.classList.add("wrong");
-    wrongSound.play();
-  }
-  setTimeout(() => {
-    current++;
-    loadQuestion();
-  }, 1500);
-}
-
-function endGame() {
-  document.getElementById("questionBox").style.display = "none";
-  document.getElementById("resultBox").style.display = "block";
-  document.getElementById("finalScore").innerText = score;
-}
-
-function restartGame() {
-  document.getElementById("resultBox").style.display = "none";
-  document.getElementById("difficulty").style.display = "block";
-}
-
-window.onload = () => {
-  bgMusic.volume = 0.3;
-  bgMusic.play();
-};
+countriesData.push(...additionalCountries);
 </script>
 
 </body>
