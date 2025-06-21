@@ -1,48 +1,540 @@
-<!-- ...предыдущая часть кода выше -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Country - Capital Game</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    margin: 0; padding: 0;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+    color: #fff;
+    user-select: none;
+  }
+  #app {
+    background: #1e1e2f;
+    max-width: 480px;
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+    padding: 30px 40px 40px;
+    text-align: center;
+  }
+  h1 {
+    font-weight: 700;
+    font-size: 2.8rem;
+    margin-bottom: 35px;
+    letter-spacing: 2px;
+    color: #f5f5f7;
+  }
+  button, select {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+  }
+  #menu {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 22px;
+  }
+  #start-button {
+    width: 100%;
+    max-width: 280px;
+    background: #6a11cb;
+    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 0;
+    cursor: pointer;
+    box-shadow: 0 6px 15px #2575fccc;
+    transition: background 0.3s ease;
+  }
+  #start-button:hover {
+    background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
+  }
+  #difficulty-select {
+    width: 280px;
+    padding: 10px 14px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: #444566;
+    color: white;
+    box-shadow: 0 4px 12px #2575fcaa;
+  }
 
-<div id="result-modal">
-  <h2>Game Over!</h2>
-  <p id="final-score-text"></p>
-  <button onclick="returnToMenu()">Back to Menu</button>
+  /* Звуковая кнопка */
+  #sound-toggle {
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    background: transparent;
+    border: none;
+    margin: 0 auto;
+    filter: drop-shadow(0 0 2px rgba(255 255 255 / 0.5));
+    transition: filter 0.3s ease;
+  }
+  #sound-toggle:hover {
+    filter: drop-shadow(0 0 6px #fff);
+  }
+  #sound-toggle svg {
+    width: 100%;
+    height: 100%;
+    fill: #fff;
+  }
+  #sound-toggle.muted svg {
+    fill: #888;
+  }
+
+  /* Игра */
+  #game {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    color: #f5f5f7;
+  }
+  #question-number {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #a0a0c8;
+    font-weight: 600;
+  }
+  #country {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  #flag {
+    width: 280px;
+    height: 160px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 5px 18px #2575fcbb;
+    margin-bottom: 25px;
+    border: 3px solid #6a11cb;
+  }
+  #options {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #options button {
+    width: 100%;
+    padding: 14px;
+    font-size: 20px;
+    border-radius: 14px;
+    border: none;
+    background: #2575fc;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 12px #2575fcaa;
+  }
+  #options button:hover:not(:disabled) {
+    background: #6a11cb;
+    box-shadow: 0 6px 16px #6a11cbcc;
+  }
+  #options button:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+  .correct {
+    background-color: #27ae60 !important;
+    box-shadow: 0 0 15px #27ae60cc !important;
+  }
+  .wrong {
+    background-color: #e74c3c !important;
+    box-shadow: 0 0 15px #e74c3ccc !important;
+  }
+
+  #timer-container {
+    width: 100%;
+    background: #333455;
+    border-radius: 12px;
+    height: 22px;
+    margin: 24px 0 10px;
+    overflow: hidden;
+  }
+  #timer-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+    transition: width 0.1s linear;
+  }
+  #timer-text {
+    margin-top: 6px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #bbbbee;
+  }
+  #score {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 12px;
+    color: #d1d1ff;
+  }
+  #result {
+    margin-top: 22px;
+    font-size: 22px;
+    font-weight: 700;
+    min-height: 38px;
+  }
+  #back-button {
+    margin-top: 28px;
+    background: transparent;
+    border: 2px solid #bbbbee;
+    border-radius: 14px;
+    color: #bbbbee;
+    font-size: 17px;
+    padding: 10px 22px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  #back-button:hover {
+    background-color: #bbbbee22;
+  }
+
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <div id="menu" role="region" aria-label="Main menu">
+    <h1>Country — Capital</h1>
+
+    <label for="difficulty-select" style="color:#ccc; font-weight:600;">Select difficulty:</label>
+    <select id="difficulty-select" aria-label="Select difficulty level">
+      <option value="easy">Easy (20 sec, 10 questions)</option>
+      <option value="medium" selected>Medium (15 sec, 20 questions)</option>
+      <option value="hard">Hard (10 sec, 30 questions)</option>
+    </select>
+
+    <button id="start-button" aria-label="Start Game">Start Game</button>
+
+    <button id="sound-toggle" aria-pressed="true" aria-label="Toggle sound and music">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path id="sound-icon" d="M3 9v6h4l5 5V4L7 9H3z"/>
+        <path id="sound-wave" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"/>
+        <path id="sound-wave2" d="M19.5 12c0-3.04-1.67-5.64-4.5-6.93v2.06c1.42 1.03 2.25 2.65 2.25 4.87s-.83 3.84-2.25 4.87v2.06c2.83-1.29 4.5-3.89 4.5-6.93z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div id="game" role="region" aria-live="polite" aria-atomic="true">
+    <div id="question-number" aria-label="Question number"></div>
+    <div id="country" aria-live="polite"></div>
+    <img id="flag" src="" alt="Country flag" />
+
+    <div id="options" role="group" aria-label="Answer options"></div>
+
+    <div id="timer-container" aria-label="Timer">
+      <div id="timer-bar"></div>
+    </div>
+    <div id="timer-text"></div>
+
+    <div id="score"></div>
+    <div id="result" aria-live="polite"></div>
+
+    <button id="back-button">Back to menu</button>
+  </div>
+
 </div>
 
-<audio id="sound-correct" src="https://freesound.org/data/previews/587/587252_8044600-lq.mp3" preload="auto"></audio>
-<audio id="sound-wrong" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2852e0a5b1.mp3?filename=fail-234710.mp3" preload="auto"></audio>
-<audio id="background-music" src="https://freesound.org/data/previews/410/410574_5121236-lq.mp3" loop preload="auto"></audio>
+<!-- Звуки -->
+<audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
+<audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/boing.ogg" preload="auto"></audio>
+<audio id="sound-timeout" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+
+<!-- Фоновая музыка -->
+<audio id="background-music" src="https://cdn.pixabay.com/download/audio/2022/03/31/audio_1738b52d1b.mp3?filename=relaxing-ambient-music-10874.mp3" loop preload="auto"></audio>
 
 <script>
-let soundOn = true;
-let musicOn = true;
-const backgroundMusic = document.getElementById("background-music");
-const resultModal = document.getElementById("result-modal");
-const finalScoreText = document.getElementById("final-score-text");
+(() => {
+  const countriesData = [
+    { country: "Austria", capital: "Vienna", flag: "https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg" },
+    { country: "Albania", capital: "Tirana", flag: "https://upload.wikimedia.org/wikipedia/commons/3/36/Flag_of_Albania.svg" },
+    { country: "Andorra", capital: "Andorra la Vella", flag: "https://upload.wikimedia.org/wikipedia/commons/1/19/Flag_of_Andorra.svg" },
+    { country: "Belarus", capital: "Minsk", flag: "https://upload.wikimedia.org/wikipedia/commons/8/85/Flag_of_Belarus.svg" },
+    { country: "Belgium", capital: "Brussels", flag: "https://upload.wikimedia.org/wikipedia/commons/6/65/Flag_of_Belgium.svg" },
+    { country: "Bosnia and Herzegovina", capital: "Sarajevo", flag: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Flag_of_Bosnia_and_Herzegovina.svg" },
+    { country: "Bulgaria", capital: "Sofia", flag: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg" },
+    { country: "Vatican City", capital: "Vatican City", flag: "https://upload.wikimedia.org/wikipedia/commons/0/00/Flag_of_the_Vatican_City.svg" },
+    { country: "Hungary", capital: "Budapest", flag: "https://upload.wikimedia.org/wikipedia/commons/c/c1/Flag_of_Hungary.svg" },
+    { country: "Germany", capital: "Berlin", flag: "https://upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg" },
+    { country: "Greece", capital: "Athens", flag: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Greece.svg" },
+    { country: "Denmark", capital: "Copenhagen", flag: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Flag_of_Denmark.svg" },
+    { country: "Iceland", capital: "Reykjavik", flag: "https://upload.wikimedia.org/wikipedia/commons/c/ce/Flag_of_Iceland.svg" },
+    { country: "Ireland", capital: "Dublin", flag: "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg" },
+    { country: "Spain", capital: "Madrid", flag: "https://upload.wikimedia.org/wikipedia/en/9/9a/Flag_of_Spain.svg" },
+    { country: "Italy", capital: "Rome", flag: "https://upload.wikimedia.org/wikipedia/en/0/03/Flag_of_Italy.svg" },
+    { country: "Cyprus", capital: "Nicosia", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Flag_of_Cyprus.svg" },
+    { country: "Latvia", capital: "Riga", flag: "https://upload.wikimedia.org/wikipedia/commons/8/84/Flag_of_Latvia.svg" },
+    { country: "Lithuania", capital: "Vilnius", flag: "https://upload.wikimedia.org/wikipedia/commons/1/11/Flag_of_Lithuania.svg" },
+    { country: "Liechtenstein", capital: "Vaduz", flag: "https://upload.wikimedia.org/wikipedia/commons/4/47/Flag_of_Liechtenstein.svg" },
+    { country: "Luxembourg", capital: "Luxembourg", flag: "https://upload.wikimedia.org/wikipedia/commons/d/da/Flag_of_Luxembourg.svg" },
+    { country: "Malta", capital: "Valletta", flag: "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Malta.svg" },
+    { country: "Moldova", capital: "Chisinau", flag: "https://upload.wikimedia.org/wikipedia/commons/2/27/Flag_of_Moldova.svg" },
+    { country: "Monaco", capital: "Monaco", flag: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Flag_of_Monaco.svg" },
+    { country: "Netherlands", capital: "Amsterdam", flag: "https://upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg" },
+    { country: "Norway", capital: "Oslo", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Norway.svg" },
+    { country: "Poland", capital: "Warsaw", flag: "https://upload.wikimedia.org/wikipedia/en/1/12/Flag_of_Poland.svg" },
+    { country: "Portugal", capital: "Lisbon", flag: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg" },
+    { country: "Russia", capital: "Moscow", flag: "https://upload.wikimedia.org/wikipedia/en/f/f3/Flag_of_Russia.svg" },
+    { country: "Romania", capital: "Bucharest", flag: "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Romania.svg" },
+    { country: "Serbia", capital: "Belgrade", flag: "https://upload.wikimedia.org/wikipedia/commons/f/ff/Flag_of_Serbia.svg" },
+    { country: "Slovakia", capital: "Bratislava", flag: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Flag_of_Slovakia.svg" },
+    { country: "Slovenia", capital: "Ljubljana", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f0/Flag_of_Slovenia.svg" },
+    { country: "Ukraine", capital: "Kyiv", flag: "https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Ukraine.svg" },
+    { country: "Finland", capital: "Helsinki", flag: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Flag_of_Finland.svg" },
+    { country: "France", capital: "Paris", flag: "https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg" },
+    { country: "Croatia", capital: "Zagreb", flag: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Flag_of_Croatia.svg" },
+    { country: "Montenegro", capital: "Podgorica", flag: "https://upload.wikimedia.org/wikipedia/commons/6/64/Flag_of_Montenegro.svg" },
+    { country: "Czech Republic", capital: "Prague", flag: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Czech_Republic.svg" },
+    { country: "Sweden", capital: "Stockholm", flag: "https://upload.wikimedia.org/wikipedia/en/4/4c/Flag_of_Sweden.svg" },
+    { country: "Switzerland", capital: "Bern", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Switzerland.svg" },
+    { country: "Estonia", capital: "Tallinn", flag: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Flag_of_Estonia.svg" },
+    { country: "Georgia", capital: "Tbilisi", flag: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Flag_of_Georgia.svg" }
+  ];
 
-function endGame(score) {
-  finalScoreText.textContent = `Your Score: ${score}`;
-  resultModal.style.display = "block";
-  backgroundMusic.pause();
-}
+  const menu = document.getElementById('menu');
+  const game = document.getElementById('game');
+  const startButton = document.getElementById('start-button');
+  const difficultySelect = document.getElementById('difficulty-select');
+  const soundToggle = document.getElementById('sound-toggle');
 
-function returnToMenu() {
-  resultModal.style.display = "none";
-  document.getElementById("game").style.display = "none";
-  document.getElementById("menu").style.display = "flex";
-}
+  const questionNumberEl = document.getElementById('question-number');
+  const countryEl = document.getElementById('country');
+  const flagEl = document.getElementById('flag');
+  const optionsEl = document.getElementById('options');
+  const timerBarEl = document.getElementById('timer-bar');
+  const timerTextEl = document.getElementById('timer-text');
+  const scoreEl = document.getElementById('score');
+  const resultEl = document.getElementById('result');
+  const backButton = document.getElementById('back-button');
 
-function toggleMusic() {
-  musicOn = !musicOn;
-  const musicIcon = document.getElementById("music-toggle-icon");
-  if (musicOn) {
-    musicIcon.classList.remove("muted");
-    backgroundMusic.play().catch(() => {});
-  } else {
-    musicIcon.classList.add("muted");
-    backgroundMusic.pause();
+  const soundCorrect = document.getElementById('sound-correct');
+  const soundWrong = document.getElementById('sound-wrong');
+  const soundTimeout = document.getElementById('sound-timeout');
+  const backgroundMusic = document.getElementById('background-music');
+
+  let soundOn = true;
+
+  let difficulty = 'medium';
+  let timeLimit = 15; 
+  let totalQuestions = 20;
+  let questions = [];
+  let currentQuestionIndex = 0;
+  let score = 0;
+  let timeLeft = timeLimit;
+  let timerId = null;
+
+  soundCorrect.volume = 0.3;
+  soundWrong.volume = 0.3;
+  soundTimeout.volume = 0.3;
+  backgroundMusic.volume = 0.15;
+
+  function shuffle(arr) {
+    for(let i = arr.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
   }
-}
+
+  function pickOptions(correctCapital) {
+    const capitals = countriesData.map(c => c.capital).filter(c => c !== correctCapital);
+    shuffle(capitals);
+    const options = capitals.slice(0, 3);
+    options.push(correctCapital);
+    shuffle(options);
+    return options;
+  }
+
+  function updateTimerBar() {
+    timerTextEl.textContent = `Time: ${timeLeft.toFixed(1)} sec`;
+    const percent = (timeLeft / timeLimit) * 100;
+    timerBarEl.style.width = percent + '%';
+
+    if (percent > 60) {
+      timerBarEl.style.background = 'linear-gradient(90deg, #27ae60, #2ecc71)';
+    } else if (percent > 30) {
+      timerBarEl.style.background = 'linear-gradient(90deg, #f1c40f, #f39c12)';
+    } else {
+      timerBarEl.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+    }
+  }
+
+  function disableOptions() {
+    const btns = optionsEl.querySelectorAll('button');
+    btns.forEach(b => b.disabled = true);
+  }
+
+  function clearOptionsStyles() {
+    const btns = optionsEl.querySelectorAll('button');
+    btns.forEach(b => {
+      b.classList.remove('correct', 'wrong');
+    });
+  }
+
+  function playSound(sound) {
+    if (!soundOn) return;
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
+  }
+
+  function showQuestion() {
+    clearOptionsStyles();
+    resultEl.textContent = '';
+    resultEl.style.color = '#eee';
+
+    if (currentQuestionIndex >= questions.length) {
+      alert(`Game over! Your score: ${score}`);
+      stopGame();
+      return;
+    }
+
+    const q = questions[currentQuestionIndex];
+    questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+    countryEl.textContent = q.country;
+    flagEl.src = q.flag;
+    flagEl.alt = `Flag of ${q.country}`;
+
+    optionsEl.innerHTML = '';
+    const options = pickOptions(q.capital);
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.textContent = opt;
+      btn.onclick = () => {
+        clearInterval(timerId);
+        disableOptions();
+        if (opt === q.capital) {
+          playSound(soundCorrect);
+          btn.classList.add('correct');
+          const pointsEarned = 10 + Math.floor(timeLeft);
+          score += pointsEarned;
+          resultEl.textContent = `Correct! +${pointsEarned} points`;
+          resultEl.style.color = '#27ae60';
+        } else {
+          playSound(soundWrong);
+          btn.classList.add('wrong');
+          Array.from(optionsEl.children).forEach(b => {
+            if (b.textContent === q.capital) b.classList.add('correct');
+          });
+          resultEl.textContent = `Wrong! Correct answer: ${q.capital}`;
+          resultEl.style.color = '#e74c3c';
+        }
+        scoreEl.textContent = `Score: ${score}`;
+        setTimeout(() => {
+          currentQuestionIndex++;
+          showQuestion();
+          startTimer();
+        }, 2000);
+      };
+      optionsEl.appendChild(btn);
+    });
+
+    scoreEl.textContent = `Score: ${score}`;
+    timeLeft = timeLimit;
+    updateTimerBar();
+  }
+
+  function startTimer() {
+    clearInterval(timerId);
+    timeLeft = timeLimit;
+    updateTimerBar();
+
+    timerId = setInterval(() => {
+      timeLeft -= 0.1;
+      if (timeLeft <= 0) {
+        clearInterval(timerId);
+        disableOptions();
+        playSound(soundTimeout);
+        const q = questions[currentQuestionIndex];
+        Array.from(optionsEl.children).forEach(b => {
+          if (b.textContent === q.capital) b.classList.add('correct');
+        });
+        resultEl.textContent = `Time's up! Correct answer: ${q.capital}`;
+        resultEl.style.color = '#e74c3c';
+
+        setTimeout(() => {
+          currentQuestionIndex++;
+          showQuestion();
+          startTimer();
+        }, 2000);
+      } else {
+        updateTimerBar();
+      }
+    }, 100);
+  }
+
+  function startGame() {
+    difficulty = difficultySelect.value;
+    if(difficulty === 'easy'){
+      timeLimit = 20;
+      totalQuestions = 10;
+    } else if (difficulty === 'medium'){
+      timeLimit = 15;
+      totalQuestions = 20;
+    } else {
+      timeLimit = 10;
+      totalQuestions = 30;
+    }
+    questions = [...countriesData];
+    shuffle(questions);
+    questions = questions.slice(0, totalQuestions);
+    currentQuestionIndex = 0;
+    score = 0;
+
+    menu.style.display = 'none';
+    game.style.display = 'flex';
+
+    if(soundOn) {
+      backgroundMusic.play().catch(() => {});
+    }
+
+    showQuestion();
+    startTimer();
+  }
+
+  function stopGame() {
+    clearInterval(timerId);
+    backgroundMusic.pause();
+    backgroundMusic.currentTime = 0;
+
+    menu.style.display = 'flex';
+    game.style.display = 'none';
+  }
+
+  function toggleSound() {
+    soundOn = !soundOn;
+    if (soundOn) {
+      soundToggle.classList.remove('muted');
+      soundToggle.setAttribute('aria-pressed', 'true');
+      backgroundMusic.play().catch(() => {});
+    } else {
+      soundToggle.classList.add('muted');
+      soundToggle.setAttribute('aria-pressed', 'false');
+      backgroundMusic.pause();
+    }
+  }
+
+  startButton.addEventListener('click', startGame);
+  backButton.addEventListener('click', stopGame);
+  soundToggle.addEventListener('click', toggleSound);
+
+  soundToggle.classList.remove('muted');
+  soundToggle.setAttribute('aria-pressed', 'true');
+
+})();
 </script>
 
-<!-- Добавьте кнопку для управления музыкой: -->
-<button id="music-toggle-icon" onclick="toggleMusic()" aria-label="Toggle Music">
-  <svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5l-5 5H3z"/></svg>
-</button>
+</body>
+</html>
