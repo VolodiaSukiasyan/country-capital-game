@@ -57,6 +57,17 @@
   #start-button:hover {
     background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
   }
+  #difficulty-select {
+    width: 280px;
+    padding: 10px 14px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: #444566;
+    color: white;
+    box-shadow: 0 4px 12px #2575fcaa;
+  }
 
   /* Звуковая кнопка */
   #sound-toggle {
@@ -200,9 +211,11 @@
   <div id="menu" role="region" aria-label="Main menu">
     <h1>Country — Capital</h1>
 
-    <label for="difficulty-select" style="display:none;">Difficulty (hidden, fixed medium)</label>
-    <select id="difficulty-select" style="display:none;">
-      <option value="medium" selected>Medium (15 sec, 20 countries)</option>
+    <label for="difficulty-select" style="color:#ccc; font-weight:600;">Select difficulty:</label>
+    <select id="difficulty-select" aria-label="Select difficulty level">
+      <option value="easy">Easy (20 sec, 10 questions)</option>
+      <option value="medium" selected>Medium (15 sec, 20 questions)</option>
+      <option value="hard">Hard (10 sec, 30 questions)</option>
     </select>
 
     <button id="start-button" aria-label="Start Game">Start Game</button>
@@ -237,16 +250,15 @@
 </div>
 
 <!-- Звуки -->
-<audio id="sound-correct" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_4437ca924a.mp3?filename=correct-positive-notification-6266.mp3" preload="auto"></audio>
-<audio id="sound-wrong" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_9dff47a68b.mp3?filename=negative-alert-tone-6267.mp3" preload="auto"></audio>
-<audio id="sound-timeout" src="https://cdn.pixabay.com/download/audio/2022/02/22/audio_bcd79e6187.mp3?filename=alarm-9079.mp3" preload="auto"></audio>
+<audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
+<audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/boing.ogg" preload="auto"></audio>
+<audio id="sound-timeout" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 
 <!-- Фоновая музыка -->
-<audio id="background-music" src="https://cdn.pixabay.com/download/audio/2021/10/31/audio_45ce15ffb3.mp3?filename=jazz-background-music-ambient-11694.mp3" loop preload="auto"></audio>
+<audio id="background-music" src="https://cdn.pixabay.com/download/audio/2022/03/31/audio_1738b52d1b.mp3?filename=relaxing-ambient-music-10874.mp3" loop preload="auto"></audio>
 
 <script>
 (() => {
-  // Countries data (Europe + Georgia)
   const countriesData = [
     { country: "Austria", capital: "Vienna", flag: "https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg" },
     { country: "Albania", capital: "Tirana", flag: "https://upload.wikimedia.org/wikipedia/commons/3/36/Flag_of_Albania.svg" },
@@ -314,25 +326,22 @@
   const soundTimeout = document.getElementById('sound-timeout');
   const backgroundMusic = document.getElementById('background-music');
 
-  // Звук и музыка включены?
   let soundOn = true;
 
-  // Настройки игры
-  let difficulty = 'medium'; // фиксируем, спрятан селект
+  let difficulty = 'medium';
   let timeLimit = 15; 
+  let totalQuestions = 20;
   let questions = [];
   let currentQuestionIndex = 0;
   let score = 0;
   let timeLeft = timeLimit;
   let timerId = null;
 
-  // Звуки громкость мягкая
   soundCorrect.volume = 0.3;
   soundWrong.volume = 0.3;
   soundTimeout.volume = 0.3;
   backgroundMusic.volume = 0.15;
 
-  // Функция для перемешивания массива (Fisher-Yates)
   function shuffle(arr) {
     for(let i = arr.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
@@ -340,7 +349,6 @@
     }
   }
 
-  // Выбираем 3 неправильных варианта и добавляем правильный
   function pickOptions(correctCapital) {
     const capitals = countriesData.map(c => c.capital).filter(c => c !== correctCapital);
     shuffle(capitals);
@@ -350,7 +358,6 @@
     return options;
   }
 
-  // Обновить таймер визуально
   function updateTimerBar() {
     timerTextEl.textContent = `Time: ${timeLeft.toFixed(1)} sec`;
     const percent = (timeLeft / timeLimit) * 100;
@@ -383,7 +390,6 @@
     sound.play().catch(() => {});
   }
 
-  // Показ вопроса
   function showQuestion() {
     clearOptionsStyles();
     resultEl.textContent = '';
@@ -419,7 +425,6 @@
         } else {
           playSound(soundWrong);
           btn.classList.add('wrong');
-          // Подсветим правильный ответ
           Array.from(optionsEl.children).forEach(b => {
             if (b.textContent === q.capital) b.classList.add('correct');
           });
@@ -441,7 +446,6 @@
     updateTimerBar();
   }
 
-  // Таймер
   function startTimer() {
     clearInterval(timerId);
     timeLeft = timeLimit;
@@ -453,7 +457,6 @@
         clearInterval(timerId);
         disableOptions();
         playSound(soundTimeout);
-        // Подсветим правильный ответ
         const q = questions[currentQuestionIndex];
         Array.from(optionsEl.children).forEach(b => {
           if (b.textContent === q.capital) b.classList.add('correct');
@@ -472,13 +475,21 @@
     }, 100);
   }
 
-  // Старт игры
   function startGame() {
-    difficulty = difficultySelect.value; // всегда medium
-    timeLimit = 15;
+    difficulty = difficultySelect.value;
+    if(difficulty === 'easy'){
+      timeLimit = 20;
+      totalQuestions = 10;
+    } else if (difficulty === 'medium'){
+      timeLimit = 15;
+      totalQuestions = 20;
+    } else {
+      timeLimit = 10;
+      totalQuestions = 30;
+    }
     questions = [...countriesData];
     shuffle(questions);
-    questions = questions.slice(0, 20);
+    questions = questions.slice(0, totalQuestions);
     currentQuestionIndex = 0;
     score = 0;
 
@@ -493,7 +504,6 @@
     startTimer();
   }
 
-  // Остановить игру, вернуть в меню
   function stopGame() {
     clearInterval(timerId);
     backgroundMusic.pause();
@@ -503,7 +513,6 @@
     game.style.display = 'none';
   }
 
-  // Переключение звука и музыки
   function toggleSound() {
     soundOn = !soundOn;
     if (soundOn) {
@@ -517,12 +526,10 @@
     }
   }
 
-  // События
   startButton.addEventListener('click', startGame);
   backButton.addEventListener('click', stopGame);
   soundToggle.addEventListener('click', toggleSound);
 
-  // Инициализация иконки звука
   soundToggle.classList.remove('muted');
   soundToggle.setAttribute('aria-pressed', 'true');
 
