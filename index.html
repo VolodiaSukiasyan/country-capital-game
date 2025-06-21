@@ -1,722 +1,296 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Country–Capital Online</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #499C54;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .quiz {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-    .country-image {
-      width: 240px;
-      height: auto;
-      border-radius: 10px;
-      margin: 15px 0;
-    }
-    .option {
-      background-color: #fff;
-      color: #499C54;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      margin: 8px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .option:hover {
-      background-color: #e1f3e4;
-    }
-    .play-btn {
-      padding: 15px 30px;
-      font-size: 18px;
-      border: none;
-      border-radius: 10px;
-      background-color: #ffffff;
-      color: #499C54;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .play-btn:hover {
-      background-color: #e1f3e4;
-    }
-    .score-timer {
-      margin-bottom: 10px;
-    }
-    .score-timer span {
-      margin: 0 10px;
-    }
-    img.logo {
-      width: 100px;
-      margin-bottom: 20px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Игра: Страна — Столица (Европа)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    color: #222;
+  }
+  .container {
+    background: #fff;
+    max-width: 480px;
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    padding: 20px 25px 30px;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+  #country {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 10px 0 15px;
+    text-align: center;
+  }
+  #flag {
+    width: 280px;
+    height: 160px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+    border: 2px solid #3498db;
+  }
+  #options {
+    width: 100%;
+  }
+  #options button {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 2px solid #2980b9;
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.2s;
+  }
+  #options button:hover:not(:disabled) {
+    background-color: #2980b9;
+    box-shadow: 0 0 10px #2980b9aa;
+  }
+  #options button:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+  #timer-container {
+    width: 100%;
+    background: #ddd;
+    border-radius: 10px;
+    height: 20px;
+    margin: 20px 0 10px;
+    overflow: hidden;
+  }
+  #timer-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+    transition: width 0.2s linear;
+  }
+  #timer-text {
+    text-align: center;
+    font-weight: 600;
+    margin-top: -5px;
+    font-size: 16px;
+    color: #34495e;
+  }
+  #score {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-top: 10px;
+  }
+  #result {
+    margin-top: 18px;
+    font-size: 22px;
+    font-weight: 700;
+    min-height: 32px;
+    text-align: center;
+  }
+  #footer {
+    margin-top: 30px;
+    font-size: 14px;
+    color: #7f8c8d;
+  }
+</style>
 </head>
 <body>
-  <div id="startScreen">
-    <img class="logo" src="https://cdn-icons-png.flaticon.com/512/44/44947.png" alt="Globe Logo" />
-    <h1>COUNTRY – CAPITAL</h1>
-    <h2>ONLINE</h2>
-    <button class="play-btn" onclick="startGame()">PLAY</button>
-  </div>
 
-  <div class="quiz" id="quizScreen">
-    <div class="score-timer">
-      <span id="score">Score: 0</span>
-      <span id="timer">Time: 10</span>
-    </div>
-    <h2 id="countryName"></h2>
-    <img id="countryImage" class="country-image" src="" alt="Country" />
-    <div>
-      <button class="option" onclick="chooseAnswer(0)"></button>
-      <button class="option" onclick="chooseAnswer(1)"></button>
-      <button class="option" onclick="chooseAnswer(2)"></button>
-      <button class="option" onclick="chooseAnswer(3)"></button>
-    </div>
-    <p id="feedback"></p>
-  </div>
+<div class="container">
+  <h1>Игра: Страна — Столица (Европа)</h1>
 
-  <script>
-    const questions = [
-  {
-    "country": "Albania",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Skanderbeg_Square_Tirana_Albania.jpg",
-    "options": [
-      "Bucharest",
-      "Madrid",
-      "Andorra la Vella",
-      "Tirana"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Andorra",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Andorra_la_Vella_-_panoramio.jpg",
-    "options": [
-      "Andorra la Vella",
-      "Riga",
-      "Ankara",
-      "Athens"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "Armenia",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/3/37/Republic_Square_Yerevan.jpg",
-    "options": [
-      "Sofia",
-      "Reykjavik",
-      "Warsaw",
-      "Yerevan"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Austria",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/4/42/Vienna_Parliament.jpg",
-    "options": [
-      "Stockholm",
-      "Vienna",
-      "Tirana",
-      "Astana"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Azerbaijan",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/8/88/Baku_Flame_Towers.jpg",
-    "options": [
-      "Valletta",
-      "Minsk",
-      "Belgrade",
-      "Baku"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Belarus",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Minsk_Victory_Square.jpg",
-    "options": [
-      "Prague",
-      "Sofia",
-      "Minsk",
-      "Belgrade"
-    ],
-    "answer": 2
-  },
-  {
-    "country": "Belgium",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/6/60/Brussels_Grand_Place.jpg",
-    "options": [
-      "Luxembourg",
-      "Ankara",
-      "Tallinn",
-      "Brussels"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Bosnia and Herzegovina",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Sarajevo_Old_Town.jpg",
-    "options": [
-      "Sarajevo",
-      "Zagreb",
-      "Amsterdam",
-      "Belgrade"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "Bulgaria",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/ed/St_Alexander_Nevsky_Cathedral_in_Sofia.jpg",
-    "options": [
-      "Sofia",
-      "Dublin",
-      "Valletta",
-      "San Marino"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "Croatia",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Zagreb_Ban_Jela\u010di\u0107_Square.jpg",
-    "options": [
-      "Sarajevo",
-      "Bern",
-      "Tirana",
-      "Zagreb"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Cyprus",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Nicosia_Cyprus_old_city.jpg",
-    "options": [
-      "Brussels",
-      "Vatican City",
-      "Nicosia",
-      "Ankara"
-    ],
-    "answer": 2
-  },
-  {
-    "country": "Czech Republic",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Prague_Castle_and_Charles_Bridge.jpg",
-    "options": [
-      "Prague",
-      "Monaco",
-      "Oslo",
-      "Rome"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "Denmark",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Nyhavn_Copenhagen.jpg",
-    "options": [
-      "Reykjavik",
-      "Sofia",
-      "Copenhagen",
-      "Chisinau"
-    ],
-    "answer": 2
-  },
-  {
-    "country": "Estonia",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/9/96/Tallinn_Old_Town_view.jpg",
-    "options": [
-      "Budapest",
-      "Tallinn",
-      "San Marino",
-      "Belgrade"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Finland",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/6/64/Helsinki_Cathedral_Senate_Square.jpg",
-    "options": [
-      "Tallinn",
-      "Tirana",
-      "Riga",
-      "Helsinki"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "France",
-    "image": "https://images.unsplash.com/photo-1543340904-1613be2b4d20?w=800",
-    "options": [
-      "Paris",
-      "Budapest",
-      "Berlin",
-      "San Marino"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "Georgia",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/0/01/Tbilisi_Sameba_Cathedral.jpg",
-    "options": [
-      "Zagreb",
-      "Nicosia",
-      "Tbilisi",
-      "Skopje"
-    ],
-    "answer": 2
-  },
-  {
-    "country": "Germany",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/8/88/Brandenburg_Gate_Berlin.jpg",
-    "options": [
-      "Skopje",
-      "Berlin",
-      "London",
-      "Luxembourg"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Greece",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Acropolis_of_Athens.jpg",
-    "options": [
-      "Vienna",
-      "Athens",
-      "Brussels",
-      "Moscow"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Hungary",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/5/51/Budapest_Parliament.jpg",
-    "options": [
-      "Ljubljana",
-      "Dublin",
-      "Sofia",
-      "Budapest"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Iceland",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/3/36/Hallgr\u00edmskirkja_Reykjav\u00edk.jpg",
-    "options": [
-      "Reykjavik",
-      "Yerevan",
-      "Warsaw",
-      "Sarajevo"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "Ireland",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/5/52/Dublin_Ha%27penny_Bridge.jpg",
-    "options": [
-      "Amsterdam",
-      "Dublin",
-      "Berlin",
-      "Vaduz"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Italy",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Colosseum_in_Rome.jpg",
-    "options": [
-      "Rome",
-      "Yerevan",
-      "Prague",
-      "Vaduz"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "Kazakhstan",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/8/85/Astana_Baiterek.jpg",
-    "options": [
-      "Sofia",
-      "Prague",
-      "Tbilisi",
-      "Astana"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Kosovo",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Pristina_Newborn_monument.jpg",
-    "options": [
-      "Copenhagen",
-      "Chisinau",
-      "Pristina",
-      "Yerevan"
-    ],
-    "answer": 2
-  },
-  {
-    "country": "Latvia",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Riga_Old_Town.jpg",
-    "options": [
-      "Belgrade",
-      "Dublin",
-      "Riga",
-      "Copenhagen"
-    ],
-    "answer": 2
-  },
-  {
-    "country": "Liechtenstein",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/3/32/Vaduz_Castle_Liechtenstein.jpg",
-    "options": [
-      "Dublin",
-      "Vaduz",
-      "Zagreb",
-      "Berlin"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Lithuania",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/5/55/Vilnius_old_town.jpg",
-    "options": [
-      "Skopje",
-      "Dublin",
-      "Bucharest",
-      "Vilnius"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Luxembourg",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Luxembourg_Palace.jpg",
-    "options": [
-      "Luxembourg",
-      "London",
-      "Warsaw",
-      "Zagreb"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "Malta",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/2/27/Valletta_cityscape.jpg",
-    "options": [
-      "Tbilisi",
-      "Copenhagen",
-      "Valletta",
-      "Baku"
-    ],
-    "answer": 2
-  },
-  {
-    "country": "Moldova",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Chisinau_Cathedral.jpg",
-    "options": [
-      "Berlin",
-      "Sarajevo",
-      "Ljubljana",
-      "Chisinau"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Monaco",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/2/26/Monaco_Panorama.jpg",
-    "options": [
-      "Monaco",
-      "Astana",
-      "Amsterdam",
-      "Bern"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "Montenegro",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Podgorica_bridge.jpg",
-    "options": [
-      "Vilnius",
-      "Amsterdam",
-      "Astana",
-      "Podgorica"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Netherlands",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Amsterdam_Canals.jpg",
-    "options": [
-      "Amsterdam",
-      "Dublin",
-      "Vaduz",
-      "Baku"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "North Macedonia",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Skopje_City_Center.jpg",
-    "options": [
-      "Riga",
-      "Skopje",
-      "Tbilisi",
-      "Sarajevo"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Norway",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d8/Oslo_Royal_Palace.jpg",
-    "options": [
-      "Kyiv",
-      "Oslo",
-      "Moscow",
-      "San Marino"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Poland",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Warsaw_Old_Town.jpg",
-    "options": [
-      "Nicosia",
-      "Warsaw",
-      "Monaco",
-      "Astana"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Portugal",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Lisbon_cityscape.jpg",
-    "options": [
-      "Sofia",
-      "Vienna",
-      "Lisbon",
-      "Vaduz"
-    ],
-    "answer": 2
-  },
-  {
-    "country": "Romania",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Bucharest_Parliament.jpg",
-    "options": [
-      "Brussels",
-      "Sarajevo",
-      "Bucharest",
-      "Pristina"
-    ],
-    "answer": 2
-  },
-  {
-    "country": "Russia",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/1/17/Moscow_Red_Square.jpg",
-    "options": [
-      "Moscow",
-      "Tbilisi",
-      "Astana",
-      "Yerevan"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "San Marino",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/6/6c/San_Marino_old_town.jpg",
-    "options": [
-      "Paris",
-      "Brussels",
-      "San Marino",
-      "Berlin"
-    ],
-    "answer": 2
-  },
-  {
-    "country": "Serbia",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Belgrade_Kalemegdan.jpg",
-    "options": [
-      "Vatican City",
-      "Belgrade",
-      "Bratislava",
-      "San Marino"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Slovakia",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/4/42/Bratislava_Castle.jpg",
-    "options": [
-      "Yerevan",
-      "Bratislava",
-      "Warsaw",
-      "Stockholm"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Slovenia",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Ljubljana_cityscape.jpg",
-    "options": [
-      "Ljubljana",
-      "Luxembourg",
-      "Reykjavik",
-      "Vaduz"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "Spain",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Madrid_Palacio_Real.jpg",
-    "options": [
-      "Bratislava",
-      "Berlin",
-      "Dublin",
-      "Madrid"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Sweden",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d8/Stockholm_Gamla_Stan.jpg",
-    "options": [
-      "Budapest",
-      "Prague",
-      "Stockholm",
-      "Astana"
-    ],
-    "answer": 2
-  },
-  {
-    "country": "Switzerland",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/2/27/Bern_City_View.jpg",
-    "options": [
-      "Budapest",
-      "Bern",
-      "Oslo",
-      "Moscow"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Turkey",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Ankara_Kocatepe_Mosque.jpg",
-    "options": [
-      "Kyiv",
-      "Ankara",
-      "Riga",
-      "Bucharest"
-    ],
-    "answer": 1
-  },
-  {
-    "country": "Ukraine",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Kyiv_Independence_Square.jpg",
-    "options": [
-      "Kyiv",
-      "Riga",
-      "Tbilisi",
-      "Yerevan"
-    ],
-    "answer": 0
-  },
-  {
-    "country": "United Kingdom",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d8/London_Big_Ben.jpg",
-    "options": [
-      "Yerevan",
-      "Paris",
-      "Athens",
-      "London"
-    ],
-    "answer": 3
-  },
-  {
-    "country": "Vatican City",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/3/39/Vatican_St_Peter%27s_Basilica.jpg",
-    "options": [
-      "Stockholm",
-      "Riga",
-      "Vatican City",
-      "Madrid"
-    ],
-    "answer": 2
+  <div id="country">Загрузка...</div>
+  <img id="flag" src="" alt="Флаг страны" />
+  
+  <div id="options"></div>
+
+  <div id="timer-container">
+    <div id="timer-bar"></div>
+  </div>
+  <div id="timer-text">Время: 15 сек</div>
+
+  <div id="score">Очки: 0</div>
+  <div id="result"></div>
+
+  <div id="footer">© 2025 Твоя Игра</div>
+</div>
+
+<script>
+  // Полный список стран Европы с правильными столицами и фото флагов (URL из Wikipedia Commons)
+  const data = [
+    { country: "Австрия", capital: "Вена", flag: "https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg" },
+    { country: "Бельгия", capital: "Брюссель", flag: "https://upload.wikimedia.org/wikipedia/commons/6/65/Flag_of_Belgium.svg" },
+    { country: "Болгария", capital: "София", flag: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg" },
+    { country: "Венгрия", capital: "Будапешт", flag: "https://upload.wikimedia.org/wikipedia/commons/c/c1/Flag_of_Hungary.svg" },
+    { country: "Греция", capital: "Афины", flag: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Greece.svg" },
+    { country: "Дания", capital: "Копенгаген", flag: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Flag_of_Denmark.svg" },
+    { country: "Ирландия", capital: "Дублин", flag: "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg" },
+    { country: "Испания", capital: "Мадрид", flag: "https://upload.wikimedia.org/wikipedia/en/9/9a/Flag_of_Spain.svg" },
+    { country: "Италия", capital: "Рим", flag: "https://upload.wikimedia.org/wikipedia/en/0/03/Flag_of_Italy.svg" },
+    { country: "Кипр", capital: "Никосия", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Flag_of_Cyprus.svg" },
+    { country: "Латвия", capital: "Рига", flag: "https://upload.wikimedia.org/wikipedia/commons/8/84/Flag_of_Latvia.svg" },
+    { country: "Литва", capital: "Вильнюс", flag: "https://upload.wikimedia.org/wikipedia/commons/1/11/Flag_of_Lithuania.svg" },
+    { country: "Люксембург", capital: "Люксембург", flag: "https://upload.wikimedia.org/wikipedia/commons/d/da/Flag_of_Luxembourg.svg" },
+    { country: "Мальта", capital: "Валлетта", flag: "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Malta.svg" },
+    { country: "Нидерланды", capital: "Амстердам", flag: "https://upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg" },
+    { country: "Норвегия", capital: "Осло", flag: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Norway.svg" },
+    { country: "Польша", capital: "Варшава", flag: "https://upload.wikimedia.org/wikipedia/en/1/12/Flag_of_Poland.svg" },
+    { country: "Португалия", capital: "Лиссабон", flag: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg" },
+    { country: "Россия", capital: "Москва", flag: "https://upload.wikimedia.org/wikipedia/en/f/f3/Flag_of_Russia.svg" },
+    { country: "Румыния", capital: "Бухарест", flag: "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Romania.svg" },
+    { country: "Сербия", capital: "Белград", flag: "https://upload.wikimedia.org/wikipedia/commons/f/ff/Flag_of_Serbia.svg" },
+    { country: "Словакия", capital: "Братислава", flag: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Flag_of_Slovakia.svg" },
+    { country: "Словения", capital: "Любляна", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f0/Flag_of_Slovenia.svg" },
+    { country: "Финляндия", capital: "Хельсинки", flag: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Flag_of_Finland.svg" },
+    { country: "Франция", capital: "Париж", flag: "https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg" },
+    { country: "Хорватия", capital: "Загреб", flag: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Flag_of_Croatia.svg" },
+    { country: "Чехия", capital: "Прага", flag: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Czech_Republic.svg" },
+    { country: "Швеция", capital: "Стокгольм", flag: "https://upload.wikimedia.org/wikipedia/en/4/4c/Flag_of_Sweden.svg" },
+    { country: "Швейцария", capital: "Берн", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Switzerland.svg" },
+    { country: "Эстония", capital: "Таллин", flag: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Flag_of_Estonia.svg" },
+  ];
+
+  let currentIndex = 0;
+  let score = 0;
+  let timeLimit = 15; // секунд на вопрос
+  let timeLeft = timeLimit;
+  let timerId;
+
+  // HTML элементы
+  const countryEl = document.getElementById('country');
+  const flagEl = document.getElementById('flag');
+  const optionsEl = document.getElementById('options');
+  const timerBarEl = document.getElementById('timer-bar');
+  const timerTextEl = document.getElementById('timer-text');
+  const scoreEl = document.getElementById('score');
+  const resultEl = document.getElementById('result');
+
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
   }
-];
 
-    let currentQuestion = 0;
-    let score = 0;
-    let timer;
-    let timeLeft = 10;
+  function generateOptions(correctCapital) {
+    // Собираем все столицы кроме правильной
+    const capitals = data.map(item => item.capital).filter(c => c !== correctCapital);
+    shuffleArray(capitals);
+    const options = capitals.slice(0, 3);
+    options.push(correctCapital);
+    shuffleArray(options);
+    return options;
+  }
 
-    function startGame() {
-      document.getElementById("startScreen").style.display = "none";
-      document.getElementById("quizScreen").style.display = "flex";
-      score = 0;
-      currentQuestion = 0;
-      loadQuestion();
-    }
+  function startTimer() {
+    timeLeft = timeLimit;
+    updateTimerDisplay();
+    timerBarEl.style.width = '100%';
 
-    function loadQuestion() {
-      const q = questions[currentQuestion];
-      document.getElementById("countryName").innerText = q.country;
-      document.getElementById("countryImage").src = q.image;
-      const buttons = document.querySelectorAll(".option");
-      buttons.forEach((btn, index) => {
-        btn.innerText = q.options[index];
-      });
-      document.getElementById("feedback").innerText = "";
-      timeLeft = 10;
-      document.getElementById("timer").innerText = `Time: ${timeLeft}`;
-      clearInterval(timer);
-      timer = setInterval(updateTimer, 1000);
-    }
-
-    function updateTimer() {
-      timeLeft--;
-      document.getElementById("timer").innerText = `Time: ${timeLeft}`;
-      if (timeLeft === 0) {
-        clearInterval(timer);
-        showFeedback(false);
-      }
-    }
-
-    function chooseAnswer(index) {
-      clearInterval(timer);
-      const q = questions[currentQuestion];
-      const isCorrect = index === q.answer;
-      showFeedback(isCorrect);
-    }
-
-    function showFeedback(isCorrect) {
-      if (isCorrect) {
-        document.getElementById("feedback").innerText = "✅ Correct!";
-        score++;
-        document.getElementById("score").innerText = `Score: ${score}`;
+    timerId = setInterval(() => {
+      timeLeft -= 0.1;
+      if (timeLeft <= 0) {
+        clearInterval(timerId);
+        timeLeft = 0;
+        updateTimerDisplay();
+        disableOptions();
+        showResult(false, true);
+        setTimeout(nextQuestion, 2000);
       } else {
-        document.getElementById("feedback").innerText = "❌ Wrong!";
+        updateTimerDisplay();
       }
-      setTimeout(() => {
-        currentQuestion++;
-        if (currentQuestion < questions.length) {
-          loadQuestion();
-        } else {
-          document.getElementById("quizScreen").innerHTML = `<h2>Game Over!</h2><p>Final Score: ${score}</p>`;
-        }
-      }, 1500);
+    }, 100);
+  }
+
+  function updateTimerDisplay() {
+    timerTextEl.textContent = `Время: ${timeLeft.toFixed(1)} сек`;
+    const widthPercent = (timeLeft / timeLimit) * 100;
+    timerBarEl.style.width = `${widthPercent}%`;
+
+    // Изменяем цвет таймера в зависимости от времени
+    if (widthPercent > 60) {
+      timerBarEl.style.background = 'linear-gradient(90deg, #27ae60, #2ecc71)'; // зелёный
+    } else if (widthPercent > 30) {
+      timerBarEl.style.background = 'linear-gradient(90deg, #f1c40f, #f39c12)'; // желтый
+    } else {
+      timerBarEl.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)'; // красный
     }
-  </script>
+  }
+
+  function disableOptions() {
+    const buttons = optionsEl.querySelectorAll('button');
+    buttons.forEach(btn => btn.disabled = true);
+  }
+
+  function showQuestion() {
+    resultEl.textContent = '';
+    const item = data[currentIndex];
+    countryEl.textContent = item.country;
+    flagEl.src = item.flag;
+    flagEl.alt = `Флаг ${item.country}`;
+
+    const options = generateOptions(item.capital);
+    optionsEl.innerHTML = '';
+    options.forEach(option => {
+      const btn = document.createElement('button');
+      btn.textContent = option;
+      btn.onclick = () => {
+        clearInterval(timerId);
+        disableOptions();
+
+        const correct = option === item.capital;
+        if (correct) {
+          // Начислим очки + бонус за скорость (макс 10 баллов + скорость)
+          const speedBonus = Math.round(timeLeft);
+          const pointsEarned = 10 + speedBonus;
+          score += pointsEarned;
+          resultEl.textContent = `Верно! +${pointsEarned} очков 🎉`;
+        } else {
+          resultEl.textContent = `Неверно! Правильный ответ: ${item.capital}`;
+        }
+        scoreEl.textContent = `Очки: ${score}`;
+
+        setTimeout(nextQuestion, 2500);
+      };
+      optionsEl.appendChild(btn);
+    });
+
+    startTimer();
+  }
+
+  function nextQuestion() {
+    currentIndex++;
+    if (currentIndex >= data.length) {
+      alert(`Игра окончена! Ваш итоговый счёт: ${score} очков`);
+      currentIndex = 0;
+      score = 0;
+      scoreEl.textContent = `Очки: ${score}`;
+    }
+    showQuestion();
+  }
+
+  // Запуск
+  showQuestion();
+</script>
+
 </body>
 </html>
